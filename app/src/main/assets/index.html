@@ -2,127 +2,826 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Admin v22 - Smart HTML Push</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, virtual-keyboard=interactive">
+    <title>Activation Admin Penal - AL-Samad Mobile</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --primary: #6366f1; --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #10b981; --danger: #ef4444; --warning: #f59e0b; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.5);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.5);
+            --warning: #f59e0b;
+            --border-color: #334155;
+            --table-row-hover: #24334d;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
         .container { max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: 1px solid #334155; margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 14px; font-size: 14px; }
+
+        /* 🧙‍♂️ Premium Cyberpunk Splash Screen Styles */
+        .splash-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #090d16; z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+        }
+        .splash-content {
+            text-align: center;
+            animation: splashPulse 2s ease-in-out infinite alternate;
+        }
+        .splash-logo {
+            font-size: 36px; font-weight: 900; margin: 0;
+            background: linear-gradient(135deg, #6366f1, #d946ef, #10b981);
+            background-size: 200% auto; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(217, 70, 239, 0.4);
+            letter-spacing: 1px;
+        }
+        .splash-tagline {
+            color: #64748b; font-size: 13px; font-weight: 600;
+            margin-top: 8px; letter-spacing: 2px; text-transform: uppercase;
+        }
+        /* 🌟 Elegant Powered By Styling */
+        .splash-powered {
+            color: #6366f1; font-size: 11px; font-weight: 700;
+            margin-top: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+        }
+        .splash-loader {
+            width: 45px; height: 45px; border: 3px solid rgba(99, 102, 241, 0.1);
+            border-top-color: #d946ef; border-bottom-color: #10b981; border-radius: 50%;
+            margin: 25px auto 0 auto; animation: spinLoader 1.2s linear infinite;
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.2);
+        }
+        @keyframes spinLoader { to { transform: rotate(360deg); } }
+        @keyframes splashPulse { from { transform: scale(0.98); } to { transform: scale(1.02); } }
+
+        /* Shining Animated Glow Borders */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            animation: borderGlow 2.5s infinite alternate;
+        }
+        @keyframes borderGlow {
+            0% { border-color: var(--border-color); box-shadow: 0 0 5px rgba(99, 102, 241, 0.1); }
+            100% { border-color: var(--primary); box-shadow: 0 0 18px var(--primary-glow); }
+        }
+
+        /* Advanced Glowing & Shining Title Text */
+        .admin-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(to right, #6366f1, #10b981, #3b82f6, #6366f1);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 0.5px rgba(255,255,255,0.1);
+            animation: textShine 4s linear infinite;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        @keyframes textShine {
+            to { background-position: 300% center; }
+        }
+
+        /* Interactive Input & Selector Fields */
+        input, textarea, select {
+            width: 100%; padding: 12px; margin-bottom: 14px;
+            border-radius: 8px; border: 1px solid var(--border-color);
+            background: #0f172a; color: white; box-sizing: border-box;
+            font-size: 14px; transition: all 0.25s ease;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* Search Input Special Styling */
+        .search-input {
+            width: 250px;
+            margin-bottom: 0;
+            padding: 8px 14px;
+            border-radius: 20px;
+            background: #090d16;
+            font-size: 13px;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 10px 16px; border-radius: 6px; border: none;
+            cursor: pointer; font-weight: 600; font-size: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 6px; transition: all 0.2s ease;
+        }
+        .btn-primary {
+            padding: 14px; background: var(--primary); color: white;
+            font-size: 14px; border-radius: 8px;
+            font-weight: bold; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
         .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
         .btn-warn { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
         .btn-edit { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid var(--accent); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 850px; }
-        th { text-align: left; color: #94a3b8; font-size: 11px; padding: 12px; border-bottom: 1px solid #334155; text-transform: uppercase; }
-        td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #1e293b; }
-        .status-pill { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
-        .active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-        .used { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .btn-secondary { background: #475569; color: white; }
+
+        /* Cyberpunk Sci-Fi Futuristic Magic Button Row Setup */
+        .editor-btn-row {
+            display: flex; gap: 12px; width: 100%; margin-top: 10px;
+        }
+        
+        .btn-magic-copy {
+            flex: 1; padding: 14px 0; background: rgba(6, 182, 212, 0.08); color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 10px; font-weight: 700;
+            font-size: 13px; letter-spacing: 0.5px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .btn-magic-copy:hover {
+            background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; border-color: #06b6d4;
+            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.45);
+        }
+        
+        .btn-magic-clear {
+            flex: 1; padding: 14px 0; background: rgba(244, 63, 94, 0.08); color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 10px; font-weight: 700;
+            font-size: 13px; letter-spacing: 0.5px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-magic-clear:hover {
+            background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; border-color: #f43f5e;
+            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(244, 63, 94, 0.45);
+        }
+        
+        .btn-magic-push {
+            flex: 1.8; padding: 14px 0;
+            background: linear-gradient(135deg, #6366f1, #d946ef, #6366f1);
+            background-size: 200% auto;
+            color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 13.5px;
+            letter-spacing: 0.8px; margin: 0; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(217, 70, 239, 0.35);
+            animation: pushGlowWave 3s linear infinite;
+        }
+        .btn-magic-push:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(217, 70, 239, 0.65);
+        }
+        @keyframes pushGlowWave {
+            0% { background-position: 0% center; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+            50% { box-shadow: 0 4px 22px rgba(217, 70, 239, 0.65); }
+            100% { background-position: 200% center; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        }
+
+        /* Header Actions Layout */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Add Icon Button */
+        .btn-add-icon {
+            background: rgba(16, 185, 129, 0.15); 
+            color: var(--accent); 
+            border: 1px solid var(--accent); 
+            border-radius: 50%;
+            width: 42px; height: 42px; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-add-icon:hover { 
+            background: var(--accent); color: white; 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); 
+            transform: scale(1.05);
+        }
+
+        /* Logout Icon Button */
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15); color: var(--danger); 
+            border: 1px solid var(--danger); border-radius: 50%;
+            width: 42px; height: 42px; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-logout:hover { 
+            background: var(--danger); color: white; 
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); 
+            transform: scale(1.05);
+        }
+
+        /* Clean Table Layout with Compact Gaps */
+        .table-responsive {
+            width: 100%; overflow-x: auto; border-radius: 8px;
+            background: #111827; border: 1px solid var(--border-color);
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 400px; text-align: left; }
+        th {
+            background-color: #1f2937; color: #94a3b8; font-size: 11.5px;
+            padding: 10px 4px; border-bottom: 2px solid var(--border-color);
+            text-transform: uppercase; letter-spacing: 0px; font-weight: 700;
+        }
+        td {
+            padding: 10px 4px; font-size: 13.5px; border-bottom: 1px solid #1f2937;
+            color: #e2e8f0; vertical-align: middle;
+        }
+        tbody tr { transition: background-color 0.2s ease; cursor: pointer; }
+        tbody tr:hover { background-color: var(--table-row-hover); }
+
+        /* Dangerous Pending State Row Styles */
+        .danger-row td {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            color: #fca5a5 !important;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.3) !important;
+        }
+        .danger-row:hover td { background-color: rgba(239, 68, 68, 0.25) !important; }
+        .danger-row td b { color: #f87171 !important; }
+
+        /* Session Clear Pending State Row Styles */
+        .warning-row td {
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            color: #fef08a !important;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.3) !important;
+        }
+        .warning-row:hover td { background-color: rgba(245, 158, 11, 0.25) !important; }
+        .warning-row td b { color: #facc15 !important; }
+
+        /* Modern Status Pills */
+        .status-pill {
+            padding: 4px 6px; border-radius: 12px; font-size: 10px;
+            font-weight: 600; text-transform: uppercase; display: inline-block;
+            letter-spacing: 0.5px; white-space: nowrap;
+        }
+        .active { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .used { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        /* Custom Colors for Distinct Logs */
+        .clear-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .clear-danger-pending { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--danger); padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        .clear-applied { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid var(--accent); padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+
         #loginSection { max-width: 400px; margin: 100px auto; text-align: center; }
         #adminDashboard { display: none; }
+
+        /* Universal Responsive Modal Popup System */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+            padding: 10px; box-sizing: border-box;
+        }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid #475569;
+            padding: 22px; border-radius: 14px; width: 100%; max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: popupReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 94vh; overflow-y: auto; position: relative;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        
+        /* Clear and High-Visibility Close Button Style */
+        .close-modal { 
+            background: rgba(255, 255, 255, 0.06); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #94a3b8; 
+            font-size: 18px; 
+            cursor: pointer;
+            width: 32px; height: 32px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+        .close-modal:hover { 
+            background: var(--danger); 
+            color: white; 
+            border-color: var(--danger);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Advanced Action Menu */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+
+        /* Magic Custom Alert Toast Styles */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px; max-width: 350px; width: calc(100% - 40px);
+        }
+        .smart-toast {
+            background: #1e293b; color: #f8fafc; padding: 14px 18px; border-radius: 8px;
+            border: 1px solid #334155; border-left: 5px solid var(--primary);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); font-size: 13.5px; font-weight: 600;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            animation: toastSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
+        }
+        .smart-toast.success { border-left-color: var(--accent); box-shadow: 0 0 15px rgba(16, 185, 129, 0.15); }
+        .smart-toast.warn { border-left-color: var(--warning); box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); }
+        .smart-toast.danger { border-left-color: var(--danger); box-shadow: 0 0 15px rgba(239, 68, 68, 0.15); }
+        @keyframes toastSlideIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        /* Magic Custom Confirmation Modal Overlay Layout */
+        .confirm-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px);
+            display: flex; justify-content: center; align-items: center; z-index: 10000;
+            animation: fadeInOverlay 0.2s ease; padding: 15px; box-sizing: border-box;
+        }
+        .confirm-box {
+            background: #1e293b; border: 1px solid #475569; border-top: 4px solid var(--primary);
+            border-radius: 12px; padding: 22px; max-width: 400px; width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            animation: popupReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+        }
+        .confirm-box.danger-action { border-top-color: var(--danger); }
+        .confirm-msg { font-size: 15px; color: #e2e8f0; line-height: 1.5; font-weight: 500; margin-bottom: 20px; }
+        .confirm-btns { display: flex; justify-content: center; gap: 12px; }
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 600px) {
+            .search-input { width: 100%; margin-top: 10px; }
+            .header-actions { gap: 8px; }
+            .admin-title { font-size: 24px; }
+            .toast-container { right: 20px; top: 20px; }
+            .template-actions { flex-direction: column; width: 100%; gap: 8px; }
+        }
+        
+        @media (max-height: 500px) {
+            .modal-overlay { align-items: flex-start; padding-top: 5px; }
+            .modal-content { max-height: 85vh; }
+        }
+
+        @keyframes popupReveal { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .footer-info {
+            text-align: center; font-size: 12px; color: #64748b; margin-top: 20px;
+            padding: 15px; border-top: 1px solid var(--border-color); font-weight: 600;
+        }
     </style>
 </head>
 <body>
+
+    <div id="appSplashScreen" class="splash-overlay">
+        <div class="splash-content">
+            <h1 class="splash-logo">AL-Samad Mobile</h1>
+            <div class="splash-tagline">Management Engine</div>
+            <div class="splash-powered">Powered by Abdul Samad</div>
+            <div class="splash-loader"></div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
     <div id="loginSection" class="card">
-        <h2>Admin Login</h2>
+        <h2 class="admin-title" style="margin-bottom: 20px;">Admin Login</h2>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
-        <button class="btn btn-primary" onclick="login()">Login</button>
+        <button class="btn btn-primary" style="width: 100%;" onclick="login()">Login</button>
+        <div class="footer-info">AL-Samad Mobile Headrajkan, Bahawalpur</div>
     </div>
+
     <div id="adminDashboard" class="container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="color:var(--primary); margin:0; font-size: 22px;">Master Admin v22</h1>
-            <button class="btn btn-danger" onclick="logout()">Logout</button>
+            <h1 class="admin-title">Activation Admin Penal</h1>
+            
+            <div class="header-actions">
+                <button class="btn-add-icon" onclick="openAddUserModal()" title="Add New User">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+                <button class="btn-logout" onclick="logout()" title="Logout">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
-            <div class="card">
-                <h2>User Settings</h2>
+
+        <div class="card">
+            <h2 style="margin-top:0; font-size:16px;">User Application: <span id="editingDisplay" onclick="copyLoadedSyncKey()" title="Click to Copy Loaded Sync Key" style="color:#e2e8f0; font-family: monospace; cursor: pointer; background: #0f172a; padding: 2px 8px; border-radius: 4px; border: 1px solid #334155; transition: all 0.2s ease; margin-left: 5px;">None</span></h2>
+            <textarea id="codeEditor" rows="8" placeholder="Paste Full HTML code here..." style="font-family: monospace; font-size: 13px;"></textarea>
+
+            <div class="editor-btn-row">
+                <button class="btn btn-magic-copy" onclick="copyHTMLContent()">📋 Copy</button>
+                <button class="btn btn-magic-clear" onclick="clearHTMLContent()">🧹 Clear</button>
+                <button class="btn btn-magic-push" onclick="updateContent()">🚀 Push Live</button>
+            </div>
+            <p style="font-size:11px; color:#64748b; margin:10px 0 0 0;">* CSS & Scripts will be preserved. Only title will be removed.</p>
+        </div>
+
+        <div class="card">
+            <div style="margin: 4px 4px 12px 4px; font-size:15px; font-weight:600; color:#cbd5e1; display:flex; align-items:center; gap:6px;">
+                📜 HTML Templates Manager
+            </div>
+            
+            <input type="hidden" id="editTemplateId" value="">
+            
+            <input type="text" id="templateTitle" placeholder="Template Code Title (e.g., Luxury UI, Standard POS)">
+            <textarea id="templateCode" rows="4" placeholder="Paste HTML template code here..." style="font-family: monospace; font-size: 13px;"></textarea>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;" class="template-actions">
+                <button id="saveTemplateBtn" class="btn btn-primary" onclick="saveTemplate()" style="background: var(--accent); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); flex: 1;">💾 Save Template</button>
+                <button id="cancelEditBtn" class="btn btn-secondary" onclick="cancelEditTemplate()" style="display: none; flex: 1;">❌ Cancel Edit</button>
+            </div>
+            
+            <div class="table-responsive" style="max-height: 180px; overflow-y: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Template Title</th>
+                            <th style="text-align: right; padding-right: 15px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="templateTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 12px;">
+            <div style="margin: 8px 4px 16px 4px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                <div style="font-size:15px; font-weight:600; color:#cbd5e1; display:flex; align-items:center; gap:6px;">
+                    📋 Customers List
+                </div>
+                <input type="text" id="searchClient" class="search-input" placeholder="🔍 Search by Name or Title..." onkeyup="searchTable()">
+            </div>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Application Title</th>
+                            <th>Status</th>
+                            <th>Clear Logs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer-info">AL-Samad Mobile Headrajkan, Bahawalpur</div>
+    </div>
+
+    <div id="userModal" class="modal-overlay" onclick="closeUserModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalTitle" style="margin:0; color: var(--text); font-size: 16px;">➕ Add New User</h3>
+                <button class="close-modal" onclick="hideUserModal()" title="Close Popup">✕</button>
+            </div>
+            <div style="margin-top: 5px;">
                 <input type="hidden" id="oldCode">
-                <input type="text" id="custCode" placeholder="Code">
-                <input type="text" id="custSync" placeholder="Sync Key">
-                <input type="text" id="custName" placeholder="Customer Name">
-                <input type="text" id="custTitle" placeholder="App Title">
-                <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Activation Code</label>
+                <input type="text" id="custCode" placeholder="Enter Activation Code">
+                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Sync Key</label>
+                <input type="text" id="custSync" placeholder="Enter Sync Key">
+                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Customer Name</label>
+                <input type="text" id="custName" placeholder="Enter Customer Name">
+                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">App Title</label>
+                <input type="text" id="custTitle" placeholder="Enter Application Title">
+                
+                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Apply HTML Template (Optional)</label>
+                <select id="userTemplate">
+                    <option value="">-- Keep Existing Content / No Template --</option>
+                </select>
             </div>
-            <div class="card">
-                <h2>HTML Content: <span id="editingDisplay" style="color:#94a3b8;">None</span></h2>
-                <textarea id="codeEditor" rows="12" placeholder="Paste Full HTML code here..."></textarea>
-                <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">* CSS & Scripts will be preserved. Only title will be removed.</p>
-                <button class="btn btn-primary" style="background:var(--accent);" onclick="updateContent()">Smart Push Content</button>
+            <div style="margin-top: 18px;">
+                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px; font-weight: bold;" onclick="saveUser()">Save User</button>
             </div>
-        </div>
-        <div class="card" style="overflow-x:auto;">
-            <table>
-                <thead><tr><th>Code</th><th>Name</th><th>App Title</th><th>Sync Key</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="userTableBody"></tbody>
-            </table>
         </div>
     </div>
+
+    <div id="actionModal" class="modal-overlay" onclick="closeActionModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="actionModalTitle" style="margin:0; color: var(--text); font-size: 17px;">User Actions</h3>
+                <button class="close-modal" onclick="hideActionModal()" title="Close Popup">✕</button>
+            </div>
+            <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 18px; font-size: 13px;">
+                <div style="margin-bottom: 6px; color: #94a3b8;">Activation Code: <b id="actionModalCode" style="color: var(--primary); font-size:14px; margin-left: 5px;"></b></div>
+                <div style="color: #94a3b8;">Sync Key: <code id="actionModalSyncKey" onclick="copySyncKey()" title="Click to Copy Sync Key" style="color: #e2e8f0; margin-left: 5px; cursor: pointer; background: #0f172a; padding: 2px 6px; border-radius: 4px; border: 1px solid #334155; transition: all 0.2s ease;"></code></div>
+            </div>
+            <div id="actionModalControls"></div>
+        </div>
+    </div>
+
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDJt_xJEwsj9jIXOiykRD21NqvejKQm2mU", databaseURL: "https://abdul-1st-project.firebaseio.com", projectId: "abdul-1st-project" };
+        // Smooth Splash Dismissal Logic Container
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('appSplashScreen');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                    }, 600);
+                }
+            }, 2500); 
+        });
+
+        if (localStorage.getItem('auth_remembered') === 'true') {
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById('adminDashboard').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'none';
+            });
+        }
+
+        const firebaseConfig = { apiKey: "AIzaSyDJt_xJEwsj9jIXOiykRD21NqvejKQm2mU", projectId: "abdul-1st-project", databaseURL: "https://abdul-1st-project.firebaseio.com" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
-        let currentSyncKey = "";
-        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        function login() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(err => alert(err.message)); }
-        function logout() { auth.signOut().then(() => location.reload()); }
-        auth.onAuthStateChanged(user => { if (user) { document.getElementById('adminDashboard').style.display = 'block'; document.getElementById('loginSection').style.display = 'none'; loadUsers(); } else { document.getElementById('loginSection').style.display = 'block'; } });
-        
+        let currentSyncKey = ""; let cmdListeners = []; let globalUsersCache = {}; let globalTemplatesCache = {};
+
+        function magicAlert(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `smart-toast ${type}`;
+            let icon = type === 'success' ? "✅" : type === 'warn' ? "⚠️" : type === 'danger' ? "❌" : "💡";
+            toast.innerHTML = `<span>${icon} &nbsp; ${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px) scale(0.9)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function magicConfirm(message, isDangerous, onConfirm) {
+            const overlay = document.createElement('div');
+            overlay.className = 'confirm-overlay';
+            const box = document.createElement('div');
+            box.className = `confirm-box ${isDangerous ? 'danger-action' : ''}`;
+            box.innerHTML = `
+                <div class="confirm-msg">${message}</div>
+                <div class="confirm-btns">
+                    <button class="btn btn-secondary" id="confirmCancelBtn" style="padding: 10px 20px;">Cancel</button>
+                    <button class="btn ${isDangerous ? 'btn-danger' : 'btn-primary'}" id="confirmOkBtn" style="padding: 10px 20px; background: ${isDangerous ? '' : 'var(--accent)'};">Confirm</button>
+                </div>
+            `;
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+            document.getElementById('confirmCancelBtn').onclick = function() { overlay.remove(); };
+            document.getElementById('confirmOkBtn').onclick = function() { overlay.remove(); onConfirm(); };
+        }
+
+        function copySyncKey() {
+            const syncKeyText = document.getElementById('actionModalSyncKey').innerText;
+            if(!syncKeyText || syncKeyText === '') return;
+            navigator.clipboard.writeText(syncKeyText).then(() => magicAlert("📋 Sync Key copied!", "success")).catch(() => {
+                const el = document.createElement('textarea'); el.value = syncKeyText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); magicAlert("📋 Sync Key copied!", "success");
+            });
+        }
+
+        function copyLoadedSyncKey() {
+            const loadedKeyText = document.getElementById('editingDisplay').innerText;
+            if(!loadedKeyText || loadedKeyText === 'None' || loadedKeyText === '') return;
+            navigator.clipboard.writeText(loadedKeyText).then(() => magicAlert("📋 Loaded Sync Key copied!", "success")).catch(() => {
+                const el = document.createElement('textarea'); el.value = loadedKeyText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); magicAlert("📋 Loaded Sync Key copied!", "success");
+            });
+        }
+
+        function login() {
+            const e = document.getElementById('email').value; const p = document.getElementById('password').value;
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => auth.signInWithEmailAndPassword(e, p)).then(() => localStorage.setItem('auth_remembered', 'true')).catch(err => magicAlert(err.message, 'danger'));
+        }
+        function logout() { localStorage.removeItem('auth_remembered'); auth.signOut().then(() => location.reload()); }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                localStorage.setItem('auth_remembered', 'true');
+                document.getElementById('adminDashboard').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'none';
+                loadUsers(); loadTemplates();
+            } else {
+                localStorage.removeItem('auth_remembered');
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('adminDashboard').style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('input, textarea, select').forEach(element => {
+            element.addEventListener('focus', function() { setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); });
+        });
+
+        function searchTable() {
+            let input = document.getElementById("searchClient").value.toLowerCase();
+            let rows = document.getElementById("userTableBody").getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                let nameCol = rows[i].getElementsByTagName("td")[0]; let titleCol = rows[i].getElementsByTagName("td")[1];
+                if (nameCol || titleCol) {
+                    let nameText = nameCol.textContent || nameCol.innerText; let titleText = titleCol.textContent || titleCol.innerText;
+                    if (nameText.toLowerCase().indexOf(input) > -1 || titleText.toLowerCase().indexOf(input) > -1) { rows[i].style.display = ""; } else { rows[i].style.display = "none"; }
+                }
+            }
+        }
+
+        function copyHTMLContent() {
+            const editor = document.getElementById('codeEditor');
+            if(!editor.value.trim()) { magicAlert("Box is already empty! Nothing to copy.", 'warn'); return; }
+            editor.select(); editor.setSelectionRange(0, 99999);
+            try { navigator.clipboard.writeText(editor.value); magicAlert("📋 Text copied!", 'success'); } catch (err) { document.execCommand('copy'); magicAlert("📋 Text copied!", 'success'); }
+        }
+
+        function clearHTMLContent() { magicConfirm("🧹 Clear all text from the HTML editor box?", false, () => { document.getElementById('codeEditor').value = ""; magicAlert("Box cleared!", "success"); }); }
+
         function loadUsers() {
             db.ref('admin/codes').on('value', snap => {
-                const tbody = document.getElementById('userTableBody'); tbody.innerHTML = "";
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = ""; cmdListeners.forEach(ref => ref.off()); cmdListeners = []; globalUsersCache = {};
                 snap.forEach(child => {
-                    const code = child.key; const d = child.val();
-                    const sClass = d.status === 'active' ? 'active' : 'used';
-                    tbody.innerHTML += `<tr>
-                        <td><b>${code}</b></td><td>${d.customerName || '-'}</td><td>${d.appTitle || '-'}</td><td><code>${d.syncKey}</code></td>
-                        <td><span class="status-pill ${sClass}">${d.status}</span></td>
-                        <td>
-                            <button class="btn btn-edit" onclick="editMeta('${code}')">Edit</button>
-                            <button class="btn" style="background:rgba(99,102,241,0.1);color:#6366f1;" onclick="loadHTML('${d.syncKey}')">Load</button>
-                            ${d.status === 'used' ? `<button class="btn btn-warn" onclick="reactivate('${code}')">Active</button>` : ''}
-                            <button class="btn btn-danger" onclick="remoteClear('${d.syncKey}')">Clear App</button>
-                            <button class="btn btn-danger" style="padding:4px;" onclick="delUser('${code}','${d.syncKey}')">X</button>
-                        </td></tr>`;
+                    const code = child.key; const d = child.val(); const syncKey = d.syncKey;
+                    let sClass = d.status === 'active' ? 'active' : 'used';
+                    globalUsersCache[code] = { code, syncKey, name: d.customerName || '-', title: d.appTitle || '-', status: d.status };
+                    const tr = document.createElement('tr'); tr.id = `row_${code}`; tr.setAttribute('onclick', `openActionModal('${code}')`);
+                    tr.innerHTML = `<td><b style="color: #f8fafc; font-size:14px;">${d.customerName || '-'}</b></td>
+                        <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${d.appTitle || '-'}</td>
+                        <td style="white-space: nowrap;"><span class="status-pill ${sClass}">${d.status}</span></td>
+                        <td id="log_${code}" style="white-space: nowrap;"><span style='color:#64748b; font-size:11px;'>Loading...</span></td>`;
+                    tbody.appendChild(tr);
+
+                    const cmdRef = db.ref('admin/commands/' + syncKey); cmdListeners.push(cmdRef);
+                    cmdRef.on('value', cmdSnap => {
+                        const cmd = cmdSnap.val(); let clearLogHTML = "<span style='color:#64748b; font-size:11px;'>No Command</span>";
+                        const rowEl = document.getElementById(`row_${code}`);
+                        if (rowEl) { rowEl.classList.remove('danger-row'); rowEl.classList.remove('warning-row'); }
+
+                        if (cmd && (cmd.action === 'clear' || cmd.action === 'clear_all')) {
+                            if (cmd.status === 'pending') { 
+                                if (cmd.action === 'clear_all') { clearLogHTML = `<span class="clear-danger-pending">⏳ Full Reset...</span>`; if(rowEl) rowEl.classList.add('danger-row'); } 
+                                else { clearLogHTML = `<span class="clear-pending">⏳ Session Clear...</span>`; if(rowEl) rowEl.classList.add('warning-row'); }
+                            }
+                            else if (cmd.status === 'applied') { 
+                                if (cmd.action === 'clear_all') { clearLogHTML = `<span class="clear-applied">✅ Reset Done</span>`; } 
+                                else { clearLogHTML = `<span class="clear-applied">✅ Session Done</span>`; }
+                            }
+                        }
+                        const logEl = document.getElementById('log_' + code); if(logEl) logEl.innerHTML = clearLogHTML;
+                        if(document.getElementById('actionModal').style.display === 'flex' && document.getElementById('actionModalCode').innerText === code) { renderAdvancedButtons(code, syncKey, d.status, cmd); }
+                    });
+                }); searchTable();
+            });
+        }
+
+        // --- NEW UPDATED TEMPLATE MANAGEMENT LOGIC ---
+        function loadTemplates() {
+            db.ref('admin/templates').on('value', snap => {
+                globalTemplatesCache = {};
+                const selectElement = document.getElementById('userTemplate');
+                const tbody = document.getElementById('templateTableBody');
+                
+                selectElement.innerHTML = '<option value="">-- Keep Existing Content / No Template --</option>';
+                tbody.innerHTML = "";
+
+                snap.forEach(child => {
+                    const id = child.key;
+                    const data = child.val();
+                    // Store both title and html in cache
+                    globalTemplatesCache[id] = { title: data.title, html: data.html };
+
+                    const opt = document.createElement('option');
+                    opt.value = id; opt.innerText = data.title;
+                    selectElement.appendChild(opt);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><b style="color: #f8fafc; font-size:13.5px;">${data.title}</b></td>
+                        <td style="text-align: right; padding-right: 15px; white-space: nowrap;">
+                            <button class="btn btn-edit" style="padding: 5px 10px; font-size: 11px; margin-right: 5px;" onclick="editTemplate('${id}')">✏️ Edit</button>
+                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="deleteTemplate('${id}')">🗑️ Delete</button>
+                        </td>`;
+                    tbody.appendChild(tr);
                 });
             });
         }
-        function editMeta(c) { db.ref('admin/codes/' + c).once('value').then(s => { const d = s.val(); document.getElementById('oldCode').value = c; document.getElementById('custCode').value = c; document.getElementById('custSync').value = d.syncKey; document.getElementById('custName').value = d.customerName; document.getElementById('custTitle').value = d.appTitle; }); }
-        function saveUser() { const old = document.getElementById('oldCode').value; const nc = document.getElementById('custCode').value; const sk = document.getElementById('custSync').value; const n = document.getElementById('custName').value; const t = document.getElementById('custTitle').value; if(old && old !== nc) db.ref('admin/codes/' + old).remove(); db.ref('admin/codes/' + nc).update({ status: 'active', syncKey: sk, customerName: n, appTitle: t }).then(() => { alert("Saved"); location.reload(); }); }
-        
-        function loadHTML(sk) { currentSyncKey = sk; document.getElementById('editingDisplay').innerText = sk; db.ref('userData/' + sk).once('value').then(s => { document.getElementById('codeEditor').value = s.val() || ""; }); }
-        
-        function updateContent() {
-            if(!currentSyncKey) return;
-            let rawContent = document.getElementById('codeEditor').value;
-            
-            // SMART CLEANING LOGIC
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(rawContent, 'text/html');
-            
-            // 1. REMOVE ONLY THE TITLE TAG
-            let titleTag = doc.querySelector('title');
-            if (titleTag) titleTag.remove();
-            
-            // 2. KEEP HEAD CONTENT (CSS/Scripts) BUT EXTRACT IT
-            let headContent = doc.head.innerHTML;
-            let bodyContent = doc.body.innerHTML;
-            
-            // If the user pasted just a snippet (no body tag), parser puts it in body
-            // We combine head content and body content to ensure styles are kept
-            let finalOutput = headContent + bodyContent;
 
-            db.ref('userData/' + currentSyncKey).set(finalOutput).then(() => alert("Smart Push Successful! CSS & Scripts Preserved."));
+        function saveTemplate() {
+            const editId = document.getElementById('editTemplateId').value;
+            const titleInput = document.getElementById('templateTitle');
+            const codeInput = document.getElementById('templateCode');
+            const title = titleInput.value.trim();
+            const html = codeInput.value.trim();
+
+            if (!title || !html) { magicAlert("Template Title and HTML Code both are required!", "warn"); return; }
+
+            if (editId) {
+                // Update Existing Template
+                db.ref('admin/templates/' + editId).update({ title: title, html: html }).then(() => {
+                    cancelEditTemplate(); // Reset form
+                    magicAlert("Template updated successfully!", "success");
+                }).catch(err => magicAlert(err.message, "danger"));
+            } else {
+                // Save New Template
+                db.ref('admin/templates').push({ title: title, html: html }).then(() => {
+                    titleInput.value = ""; codeInput.value = "";
+                    magicAlert("Template saved successfully!", "success");
+                }).catch(err => magicAlert(err.message, "danger"));
+            }
         }
 
-        function reactivate(c) { db.ref('admin/codes/' + c).update({ status: 'active' }); }
-        function remoteClear(sk) { if(confirm("Force One-Time Logout?")) db.ref('admin/commands/' + sk).set('clear'); }
-        function delUser(c, sk) { if(confirm("Delete User?")) { db.ref('admin/codes/' + c).remove(); db.ref('userData/' + sk).remove(); } }
+        function editTemplate(id) {
+            const tData = globalTemplatesCache[id];
+            if(!tData) return;
+            
+            document.getElementById('editTemplateId').value = id;
+            document.getElementById('templateTitle').value = tData.title;
+            document.getElementById('templateCode').value = tData.html;
+            
+            // Change Save Button Style to Update Mode
+            const saveBtn = document.getElementById('saveTemplateBtn');
+            saveBtn.innerHTML = "🔄 Update Template";
+            saveBtn.style.background = "var(--primary)";
+            
+            document.getElementById('cancelEditBtn').style.display = "inline-flex";
+            window.scrollTo({ top: document.getElementById('templateTitle').offsetTop - 50, behavior: 'smooth' });
+        }
+
+        function cancelEditTemplate() {
+            document.getElementById('editTemplateId').value = "";
+            document.getElementById('templateTitle').value = "";
+            document.getElementById('templateCode').value = "";
+            
+            // Revert Save Button Style
+            const saveBtn = document.getElementById('saveTemplateBtn');
+            saveBtn.innerHTML = "💾 Save Template";
+            saveBtn.style.background = "var(--accent)";
+            
+            document.getElementById('cancelEditBtn').style.display = "none";
+        }
+
+        function deleteTemplate(id) {
+            magicConfirm("Are you sure you want to permanently delete this template?", true, () => {
+                db.ref('admin/templates/' + id).remove().then(() => {
+                    if (document.getElementById('editTemplateId').value === id) cancelEditTemplate();
+                    magicAlert("Template deleted successfully.", "success");
+                }).catch(err => magicAlert(err.message, "danger"));
+            });
+        }
+        // ------------------------------------------------
+
+        function openActionModal(code) {
+            const user = globalUsersCache[code]; if(!user) return;
+            document.getElementById('actionModalTitle').innerText = "📋 " + user.name; document.getElementById('actionModalCode').innerText = user.code; document.getElementById('actionModalSyncKey').innerText = user.syncKey;
+            db.ref('admin/commands/' + user.syncKey).once('value').then(snap => { renderAdvancedButtons(user.code, user.syncKey, user.status, snap.val()); document.getElementById('actionModal').style.display = "flex"; });
+        }
+
+        function renderAdvancedButtons(code, syncKey, status, cmd) {
+            const container = document.getElementById('actionModalControls');
+            let cmdBtnHTML = `<button class="btn btn-warn" style="padding:12px;" onclick="remoteClear('${syncKey}', 'session')">Clear Session</button> <button class="btn btn-danger" style="padding:12px;" onclick="remoteClear('${syncKey}', 'all')">Full Reset Wipe</button>`;
+            if (cmd && cmd.status === 'pending') { cmdBtnHTML = `<button class="btn btn-warn" style="grid-column: span 2; background: rgba(245,158,11,0.2); padding:12px;" onclick="stopClear('${syncKey}')">⛔ Stop Pending Command</button>`; }
+            container.innerHTML = `<div class="action-grid"> <button class="btn btn-edit" style="padding:12px;" onclick="editMeta('${code}'); hideActionModal();">📝 Edit Meta Info</button> <button class="btn" style="background:rgba(99,102,241,0.15); color:#6366f1; padding:12px; border: 1px solid rgba(99,102,241,0.2);" onclick="loadHTML('${syncKey}'); hideActionModal();">📂 Load User App</button> </div> <div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Status Options Directory</div> <div class="action-grid"> <button class="btn btn-edit" style="padding:12px; background: rgba(16, 185, 129, 0.15); color: var(--accent);" onclick="toggleStatus('${code}', 'active')">🔓 Set Active</button> <button class="btn btn-warn" style="padding:12px; background: rgba(245, 158, 11, 0.15); color: var(--warning);" onclick="toggleStatus('${code}', 'used')">🔒 Set Used</button> </div> <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:10px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Remote Database Options</div> <div class="action-grid">${cmdBtnHTML}</div> <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:10px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Danger Control</div> <div class="action-grid" style="grid-template-columns: 1fr;"> <button class="btn btn-danger" style="padding:12px; background: rgba(239, 68, 68, 0.25);" onclick="delUser('${code}','${syncKey}'); hideActionModal();">🗑️ Delete User Account</button> </div>`;
+        }
+
+        function toggleStatus(c, newStatus) { db.ref('admin/codes/' + c).update({ status: newStatus }).then(() => magicAlert("Status explicitly changed to " + newStatus.toUpperCase(), "success")); }
+        function hideUserModal() { document.getElementById('userModal').style.display = "none"; }
+        function hideActionModal() { document.getElementById('actionModal').style.display = "none"; }
+        function closeUserModal(e) { if(e.target.id === 'userModal') hideUserModal(); }
+        function closeActionModal(e) { if(e.target.id === 'actionModal') hideActionModal(); }
+        
+        function openAddUserModal() { document.getElementById('modalTitle').innerText = "➕ Add New User"; document.getElementById('oldCode').value = ""; document.getElementById('custCode').value = ""; document.getElementById('custSync').value = ""; document.getElementById('custName').value = ""; document.getElementById('custTitle').value = ""; document.getElementById('userTemplate').value = ""; document.getElementById('userModal').style.display = "flex"; }
+        
+        function editMeta(c) { db.ref('admin/codes/' + c).once('value').then(s => { const d = s.val(); document.getElementById('modalTitle').innerText = "📝 Edit User Meta"; document.getElementById('oldCode').value = c; document.getElementById('custCode').value = c; document.getElementById('custSync').value = d.syncKey; document.getElementById('custName').value = d.customerName; document.getElementById('custTitle').value = d.appTitle; document.getElementById('userTemplate').value = ""; document.getElementById('userModal').style.display = "flex"; }); }
+        
+        function saveUser() { 
+            const old = document.getElementById('oldCode').value; const nc = document.getElementById('custCode').value.trim(); const sk = document.getElementById('custSync').value.trim(); const n = document.getElementById('custName').value.trim(); const t = document.getElementById('custTitle').value.trim(); const templateId = document.getElementById('userTemplate').value;
+            if(!nc || !sk) { magicAlert("Code and Sync Key are required.", "warn"); return; } 
+            if(old && old !== nc) db.ref('admin/codes/' + old).remove(); 
+            db.ref('admin/codes/' + nc).update({ status: 'active', syncKey: sk, customerName: n, appTitle: t }).then(() => { 
+                if (templateId && globalTemplatesCache[templateId]) {
+                    const targetCode = globalTemplatesCache[templateId].html; // Used .html correctly from updated cache
+                    db.ref('userData/' + sk).set(targetCode).then(() => { if (currentSyncKey === sk) { document.getElementById('codeEditor').value = targetCode; } });
+                }
+                hideUserModal(); magicAlert("Saved Successfully", "success"); 
+            }).catch(err => magicAlert(err.message, "danger")); 
+        }
+
+        function loadHTML(sk) { currentSyncKey = sk; document.getElementById('editingDisplay').innerText = sk; db.ref('userData/' + sk).once('value').then(s => { document.getElementById('codeEditor').value = s.val() || ""; }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        
+        function updateContent() { if(!currentSyncKey) return; let rawContent = document.getElementById('codeEditor').value; let parser = new DOMParser(); let doc = parser.parseFromString(rawContent, 'text/html'); let titleTag = doc.querySelector('title'); if (titleTag) titleTag.remove(); let headContent = doc.head.innerHTML; let bodyContent = doc.body.innerHTML; let finalOutput = headContent + bodyContent; db.ref('userData/' + currentSyncKey).set(finalOutput).then(() => magicAlert("Smart Push Successful!", "success")); }
+        
+        function remoteClear(sk, type) { if (type === 'session') { magicConfirm("Only deactivate the activation session?", false, () => { db.ref('admin/commands/' + sk).set({ action: 'clear', status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP }); magicAlert("Session Clear command triggered!", "warn"); }); } else if (type === 'all') { magicConfirm("Force full application reset?", true, () => { db.ref('admin/commands/' + sk).set({ action: 'clear_all', status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP }); magicAlert("Full Reset Wipe command triggered!", "danger"); }); } }
+        function stopClear(sk) { magicConfirm("Stop and Cancel the Clear Command?", false, () => { db.ref('admin/commands/' + sk).remove(); magicAlert("Command cancelled successfully.", "success"); }); }
+        function delUser(c, sk) { magicConfirm("Are you absolutely sure you want to delete this user?", true, () => { db.ref('admin/codes/' + c).remove(); db.ref('userData/' + sk).remove(); db.ref('admin/commands/' + sk).remove(); magicAlert("User account deleted completely.", "success"); }); }
     </script>
 </body>
 </html>
