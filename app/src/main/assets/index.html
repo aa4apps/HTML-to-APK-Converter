@@ -2,826 +2,1301 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, virtual-keyboard=interactive">
-    <title>Activation Admin Penal - AL-Samad Mobile</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Task Manager Pro (Fixed & Secure)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.4);
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.5);
+            --primary: #4f46e5;
+            --success: #10b981;
             --danger: #ef4444;
-            --danger-glow: rgba(239, 68, 68, 0.5);
-            --warning: #f59e0b;
-            --border-color: #334155;
-            --table-row-hover: #24334d;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 15px;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg); color: var(--text-main);
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
+            -webkit-tap-highlight-color: transparent;
+            font-size: 16px;
             overflow-x: hidden;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
-
-        /* 🧙‍♂️ Premium Cyberpunk Splash Screen Styles */
-        .splash-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #090d16; z-index: 99999;
-            display: flex; justify-content: center; align-items: center;
-            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
-        }
-        .splash-content {
-            text-align: center;
-            animation: splashPulse 2s ease-in-out infinite alternate;
-        }
-        .splash-logo {
-            font-size: 36px; font-weight: 900; margin: 0;
-            background: linear-gradient(135deg, #6366f1, #d946ef, #10b981);
-            background-size: 200% auto; -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(217, 70, 239, 0.4);
-            letter-spacing: 1px;
-        }
-        .splash-tagline {
-            color: #64748b; font-size: 13px; font-weight: 600;
-            margin-top: 8px; letter-spacing: 2px; text-transform: uppercase;
-        }
-        /* 🌟 Elegant Powered By Styling */
-        .splash-powered {
-            color: #6366f1; font-size: 11px; font-weight: 700;
-            margin-top: 12px; letter-spacing: 1.5px; text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-        }
-        .splash-loader {
-            width: 45px; height: 45px; border: 3px solid rgba(99, 102, 241, 0.1);
-            border-top-color: #d946ef; border-bottom-color: #10b981; border-radius: 50%;
-            margin: 25px auto 0 auto; animation: spinLoader 1.2s linear infinite;
-            box-shadow: 0 0 15px rgba(217, 70, 239, 0.2);
-        }
-        @keyframes spinLoader { to { transform: rotate(360deg); } }
-        @keyframes splashPulse { from { transform: scale(0.98); } to { transform: scale(1.02); } }
-
-        /* Shining Animated Glow Borders */
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            animation: borderGlow 2.5s infinite alternate;
-        }
-        @keyframes borderGlow {
-            0% { border-color: var(--border-color); box-shadow: 0 0 5px rgba(99, 102, 241, 0.1); }
-            100% { border-color: var(--primary); box-shadow: 0 0 18px var(--primary-glow); }
+        .container { 
+            width: 100%; max-width: 100%; padding: 15px; 
+            box-sizing: border-box; transition: max-width 0.3s ease;
         }
 
-        /* Advanced Glowing & Shining Title Text */
-        .admin-title {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 900;
-            background: linear-gradient(to right, #6366f1, #10b981, #3b82f6, #6366f1);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            -webkit-text-stroke: 0.5px rgba(255,255,255,0.1);
-            animation: textShine 4s linear infinite;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-        @keyframes textShine {
-            to { background-position: 300% center; }
+        @media (min-width: 768px) {
+            .container { max-width: 800px; padding: 30px 20px; }
         }
 
-        /* Interactive Input & Selector Fields */
-        input, textarea, select {
-            width: 100%; padding: 12px; margin-bottom: 14px;
-            border-radius: 8px; border: 1px solid var(--border-color);
-            background: #0f172a; color: white; box-sizing: border-box;
-            font-size: 14px; transition: all 0.25s ease;
-        }
-        input:focus, textarea:focus, select:focus {
-            outline: none; border-color: var(--primary);
-            box-shadow: 0 0 10px var(--primary-glow);
+        @media (min-width: 1200px) {
+            .container { max-width: 1100px; }
         }
 
-        /* Search Input Special Styling */
-        .search-input {
-            width: 250px;
-            margin-bottom: 0;
-            padding: 8px 14px;
-            border-radius: 20px;
-            background: #090d16;
-            font-size: 13px;
+        .main-mode-nav { display: flex; width: 100%; background: #1e293b; padding: 6px; box-sizing: border-box; justify-content: center; gap: 8px; }
+        .mode-btn { 
+            flex: 1; max-width: 300px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); 
+            background: transparent; color: #94a3b8; font-weight: 700; cursor: pointer; border-radius: 12px; 
+            font-size: 14px; transition: all 0.2s ease; 
+        }
+        .mode-btn.active { 
+            background: #334155; color: white; border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+        }
+        .mode-btn:hover:not(.active) { color: white; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+
+        .header-nav { 
+            width: 100%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; padding: 10px 15px; box-sizing: border-box; gap: 8px;
         }
 
-        /* Button Styles */
-        .btn {
-            padding: 10px 16px; border-radius: 6px; border: none;
-            cursor: pointer; font-weight: 600; font-size: 12px;
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 6px; transition: all 0.2s ease;
+        @media (min-width: 768px) {
+            .header-nav { padding: 15px 40px; gap: 20px; }
+            .main-mode-nav { padding: 8px 40px; }
         }
-        .btn-primary {
-            padding: 14px; background: var(--primary); color: white;
-            font-size: 14px; border-radius: 8px;
-            font-weight: bold; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-warn { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
-        .btn-edit { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid var(--accent); }
-        .btn-secondary { background: #475569; color: white; }
 
-        /* Cyberpunk Sci-Fi Futuristic Magic Button Row Setup */
-        .editor-btn-row {
-            display: flex; gap: 12px; width: 100%; margin-top: 10px;
+        .dropdown-container { flex: 1; display: flex; gap: 6px; align-items: center; overflow: hidden; }
+        select.fancy-select {
+            flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0;
+            background: #f1f5f9; color: var(--text-main); font-weight: 700; font-size: 13px;
+            outline: none; appearance: none; cursor: pointer; text-overflow: ellipsis;
         }
+
+        .header-icon { 
+            cursor: pointer; padding: 6px; display: flex; align-items: center; 
+            justify-content: center; color: var(--text-sub); border-radius: 8px; transition: color 0.2s ease;
+        }
+        .header-icon:active { background: #f1f5f9; }
+        .header-icon.auth-active { color: var(--success); }
+
+        .page-content { display: none; width: 100%; }
+        .page-content.active { display: block; }
+
+        .item-card { background: white; border-radius: 20px; padding: 8px 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .item { display: flex; align-items: center; padding: 14px 12px; border-bottom: 1px solid #f1f5f9; border-radius: 12px; transition: background 0.2s ease; }
+        .item:last-child { border-bottom: none; }
+        .item:hover { background: #f8fafc; }
         
-        .btn-magic-copy {
-            flex: 1; padding: 14px 0; background: rgba(6, 182, 212, 0.08); color: #22d3ee;
-            border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 10px; font-weight: 700;
-            font-size: 13px; letter-spacing: 0.5px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
-        }
-        .btn-magic-copy:hover {
-            background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; border-color: #06b6d4;
-            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.45);
-        }
+        .qty-circle { width: 36px; height: 36px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; margin-right: 14px; color: var(--text-main); min-width: 36px; transition: transform 0.2s ease; }
+        .item:hover .qty-circle { transform: scale(1.1); background: var(--primary); color: white; }
         
-        .btn-magic-clear {
-            flex: 1; padding: 14px 0; background: rgba(244, 63, 94, 0.08); color: #fb7185;
-            border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 10px; font-weight: 700;
-            font-size: 13px; letter-spacing: 0.5px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-magic-clear:hover {
-            background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; border-color: #f43f5e;
-            transform: translateY(-3px); box-shadow: 0 8px 20px rgba(244, 63, 94, 0.45);
-        }
+        .task-name { flex: 1; font-size: 16px; font-weight: 600; color: var(--text-main); cursor: pointer; user-select: none; line-height: 1.4; }
+        .task-name:hover { color: var(--primary); }
+
+        .badge { font-size: 12px; padding: 6px 14px; border-radius: 10px; font-weight: 800; cursor: pointer; border: none; text-transform: uppercase; transition: transform 0.2s ease, opacity 0.2s ease; }
+        .badge:hover { opacity: 0.8; transform: translateY(-1px); }
+        .badge.done { background: #dcfce7; color: #15803d; }
+        .badge.pending { background: #fee2e2; color: #b91c1c; }
         
-        .btn-magic-push {
-            flex: 1.8; padding: 14px 0;
-            background: linear-gradient(135deg, #6366f1, #d946ef, #6366f1);
-            background-size: 200% auto;
-            color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 13.5px;
-            letter-spacing: 0.8px; margin: 0; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(217, 70, 239, 0.35);
-            animation: pushGlowWave 3s linear infinite;
-        }
-        .btn-magic-push:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(217, 70, 239, 0.65);
-        }
-        @keyframes pushGlowWave {
-            0% { background-position: 0% center; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
-            50% { box-shadow: 0 4px 22px rgba(217, 70, 239, 0.65); }
-            100% { background-position: 200% center; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
-        }
+        .del { margin-left: 14px; color: #cbd5e1; cursor: pointer; font-size: 20px; padding: 5px; transition: color 0.2s ease; }
+        .del:hover { color: var(--danger); }
 
-        /* Header Actions Layout */
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { background: white; width: 92%; max-width: 450px; padding: 25px; border-radius: 24px; position: relative; }
+        
+        .modal-title-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 0; }
+        .modal h2 { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .modal-close-icon { 
+            font-size: 22px; color: #cbd5e1; cursor: pointer; 
+            font-weight: bold; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+            background: #f8fafc; border-radius: 50%; transition: all 0.2s ease;
         }
+        .modal-close-icon:hover { background: #f1f5f9; color: var(--danger); transform: rotate(90deg); }
 
-        /* Add Icon Button */
-        .btn-add-icon {
-            background: rgba(16, 185, 129, 0.15); 
-            color: var(--accent); 
-            border: 1px solid var(--accent); 
-            border-radius: 50%;
-            width: 42px; height: 42px; padding: 0;
+        .btn-main { 
+            background: var(--primary); color: white; border: 2px solid rgba(0,0,0,0.1); 
+            width: 100%; padding: 18px; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer; 
+            transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+        .btn-main:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); border-color: rgba(255,255,255,0.2); }
+        .btn-main:active { transform: translateY(0); }
+        .close-btn { 
+            width: 100%; padding: 16px; border-radius: 12px; border: 1px solid #334155; font-weight: 800; cursor: pointer; 
+            background: #1e293b; color: white; margin-top: 15px; font-size: 15px; transition: all 0.2s ease; 
+        }
+        .close-btn:hover { background: #334155; border-color: #475569; }
+
+        .add-card { background: white; padding: 25px; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid rgba(226, 232, 240, 0.8); max-width: 800px; margin: 0 auto; }
+        .modern-input { width: 100%; padding: 16px; border: 2px solid #f1f5f9; border-radius: 16px; font-size: 16px; font-weight: 600; outline: none; box-sizing: border-box; background: #f8fafc; transition: all 0.2s ease; }
+        .modern-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .modern-input::placeholder { color: #cbd5e1; font-weight: 400; }
+        
+        .qty-input-field { width: 90px; text-align: center; font-size: 26px; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 15px; outline: none; transition: all 0.2s ease; }
+        .qty-input-field:focus { border-color: var(--primary); }
+        .sc-btn { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; color: var(--primary); font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .sc-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
+
+        /* Settings Tabs CSS */
+        .settings-tabs { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; }
+        .settings-tabs::-webkit-scrollbar { height: 4px; }
+        .settings-tabs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .tab-btn { flex: 0 0 auto; padding: 10px 16px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: var(--text-sub); font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s ease; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2); }
+        .tab-btn:hover:not(.active) { background: #f8fafc; color: var(--text-main); }
+        
+        .settings-section { display: none; animation: fadeIn 0.3s ease; }
+        .settings-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .settings-card { background: white; border: 2px solid #f1f5f9; border-radius: 16px; padding: 20px; margin-bottom: 20px; transition: transform 0.2s ease; }
+        .settings-card:hover { border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        
+        .btn-export { background: #f0fdf4 !important; color: #166534 !important; border-color: #bbf7d0 !important; }
+        .btn-export:hover { background: #166534 !important; color: white !important; }
+        .btn-import { background: #fffbeb !important; color: #92400e !important; border-color: #fef3c7 !important; }
+        .btn-import:hover { background: #92400e !important; color: white !important; }
+        .btn-danger { background: #fef2f2 !important; color: var(--danger) !important; border-color: #fecaca !important; }
+        .btn-danger:hover { background: var(--danger) !important; color: white !important; }
+        .btn-secondary { background: #f1f5f9 !important; color: #475569 !important; border-color: #e2e8f0 !important; }
+        .btn-secondary:hover { background: #475569 !important; color: white !important; }
+
+        /* Chat Widget Styles */
+        .chat-fab {
+            position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px;
+            background: var(--primary); color: white; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); cursor: pointer;
+            z-index: 999; transition: transform 0.2s ease; font-size: 24px;
         }
-        .btn-add-icon:hover { 
-            background: var(--accent); color: white; 
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); 
-            transform: scale(1.05);
-        }
-
-        /* Logout Icon Button */
-        .btn-logout {
-            background: rgba(239, 68, 68, 0.15); color: var(--danger); 
-            border: 1px solid var(--danger); border-radius: 50%;
-            width: 42px; height: 42px; padding: 0;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .btn-logout:hover { 
-            background: var(--danger); color: white; 
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); 
-            transform: scale(1.05);
-        }
-
-        /* Clean Table Layout with Compact Gaps */
-        .table-responsive {
-            width: 100%; overflow-x: auto; border-radius: 8px;
-            background: #111827; border: 1px solid var(--border-color);
-        }
-        table { width: 100%; border-collapse: collapse; min-width: 400px; text-align: left; }
-        th {
-            background-color: #1f2937; color: #94a3b8; font-size: 11.5px;
-            padding: 10px 4px; border-bottom: 2px solid var(--border-color);
-            text-transform: uppercase; letter-spacing: 0px; font-weight: 700;
-        }
-        td {
-            padding: 10px 4px; font-size: 13.5px; border-bottom: 1px solid #1f2937;
-            color: #e2e8f0; vertical-align: middle;
-        }
-        tbody tr { transition: background-color 0.2s ease; cursor: pointer; }
-        tbody tr:hover { background-color: var(--table-row-hover); }
-
-        /* Dangerous Pending State Row Styles */
-        .danger-row td {
-            background-color: rgba(239, 68, 68, 0.15) !important;
-            color: #fca5a5 !important;
-            border-bottom: 1px solid rgba(239, 68, 68, 0.3) !important;
-        }
-        .danger-row:hover td { background-color: rgba(239, 68, 68, 0.25) !important; }
-        .danger-row td b { color: #f87171 !important; }
-
-        /* Session Clear Pending State Row Styles */
-        .warning-row td {
-            background-color: rgba(245, 158, 11, 0.15) !important;
-            color: #fef08a !important;
-            border-bottom: 1px solid rgba(245, 158, 11, 0.3) !important;
-        }
-        .warning-row:hover td { background-color: rgba(245, 158, 11, 0.25) !important; }
-        .warning-row td b { color: #facc15 !important; }
-
-        /* Modern Status Pills */
-        .status-pill {
-            padding: 4px 6px; border-radius: 12px; font-size: 10px;
-            font-weight: 600; text-transform: uppercase; display: inline-block;
-            letter-spacing: 0.5px; white-space: nowrap;
-        }
-        .active { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .used { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
-
-        /* Custom Colors for Distinct Logs */
-        .clear-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
-        .clear-danger-pending { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid var(--danger); padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-        .clear-applied { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid var(--accent); padding: 4px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; }
-
-        #loginSection { max-width: 400px; margin: 100px auto; text-align: center; }
-        #adminDashboard { display: none; }
-
-        /* Universal Responsive Modal Popup System */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
-            padding: 10px; box-sizing: border-box;
-        }
-        .modal-content {
-            background: var(--card-bg); border: 1px solid #475569;
-            padding: 22px; border-radius: 14px; width: 100%; max-width: 440px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: popupReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: 94vh; overflow-y: auto; position: relative;
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .chat-fab:hover { transform: scale(1.1); }
         
-        /* Clear and High-Visibility Close Button Style */
-        .close-modal { 
-            background: rgba(255, 255, 255, 0.06); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            color: #94a3b8; 
-            font-size: 18px; 
-            cursor: pointer;
-            width: 32px; height: 32px;
-            display: inline-flex; align-items: center; justify-content: center;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-            font-weight: bold;
-            box-sizing: border-box;
+        .chat-window {
+            position: fixed; bottom: 85px; right: 20px; width: 300px; height: 400px;
+            background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none; flex-direction: column; z-index: 999; border: 1px solid #e2e8f0;
+            overflow: hidden;
         }
-        .close-modal:hover { 
-            background: var(--danger); 
-            color: white; 
-            border-color: var(--danger);
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
-            transform: scale(1.05);
+        .chat-header {
+            background: var(--primary); color: white; padding: 15px; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        /* Advanced Action Menu */
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-
-        /* Magic Custom Alert Toast Styles */
-        .toast-container {
-            position: fixed; top: 20px; right: 20px; z-index: 9999;
-            display: flex; flex-direction: column; gap: 10px; max-width: 350px; width: calc(100% - 40px);
+        .chat-messages {
+            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8fafc;
         }
-        .smart-toast {
-            background: #1e293b; color: #f8fafc; padding: 14px 18px; border-radius: 8px;
-            border: 1px solid #334155; border-left: 5px solid var(--primary);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4); font-size: 13.5px; font-weight: 600;
-            display: flex; align-items: center; justify-content: space-between; gap: 12px;
-            animation: toastSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transition: all 0.3s ease;
+        .chat-msg {
+            max-width: 80%; padding: 10px 12px; border-radius: 12px; font-size: 14px;
         }
-        .smart-toast.success { border-left-color: var(--accent); box-shadow: 0 0 15px rgba(16, 185, 129, 0.15); }
-        .smart-toast.warn { border-left-color: var(--warning); box-shadow: 0 0 15px rgba(245, 158, 11, 0.15); }
-        .smart-toast.danger { border-left-color: var(--danger); box-shadow: 0 0 15px rgba(239, 68, 68, 0.15); }
-        @keyframes toastSlideIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .chat-msg.self { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .chat-msg.other { background: white; border: 1px solid #e2e8f0; color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .chat-msg-user { font-size: 10px; font-weight: 800; opacity: 0.7; margin-bottom: 2px; }
         
-        /* Magic Custom Confirmation Modal Overlay Layout */
-        .confirm-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px);
-            display: flex; justify-content: center; align-items: center; z-index: 10000;
-            animation: fadeInOverlay 0.2s ease; padding: 15px; box-sizing: border-box;
+        .chat-input-area {
+            padding: 10px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 8px;
         }
-        .confirm-box {
-            background: #1e293b; border: 1px solid #475569; border-top: 4px solid var(--primary);
-            border-radius: 12px; padding: 22px; max-width: 400px; width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-            animation: popupReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: center;
+        .chat-input {
+            flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; font-family: inherit; font-size: 14px;
         }
-        .confirm-box.danger-action { border-top-color: var(--danger); }
-        .confirm-msg { font-size: 15px; color: #e2e8f0; line-height: 1.5; font-weight: 500; margin-bottom: 20px; }
-        .confirm-btns { display: flex; justify-content: center; gap: 12px; }
-        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
-
-        @media (max-width: 600px) {
-            .search-input { width: 100%; margin-top: 10px; }
-            .header-actions { gap: 8px; }
-            .admin-title { font-size: 24px; }
-            .toast-container { right: 20px; top: 20px; }
-            .template-actions { flex-direction: column; width: 100%; gap: 8px; }
-        }
-        
-        @media (max-height: 500px) {
-            .modal-overlay { align-items: flex-start; padding-top: 5px; }
-            .modal-content { max-height: 85vh; }
-        }
-
-        @keyframes popupReveal { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-        .footer-info {
-            text-align: center; font-size: 12px; color: #64748b; margin-top: 20px;
-            padding: 15px; border-top: 1px solid var(--border-color); font-weight: 600;
+        .chat-send-btn {
+            background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 12px; cursor: pointer; font-weight: 700;
         }
     </style>
 </head>
 <body>
 
-    <div id="appSplashScreen" class="splash-overlay">
-        <div class="splash-content">
-            <h1 class="splash-logo">AL-Samad Mobile</h1>
-            <div class="splash-tagline">Management Engine</div>
-            <div class="splash-powered">Powered by Abdul Samad</div>
-            <div class="splash-loader"></div>
-        </div>
+<div class="main-mode-nav">
+    <button class="mode-btn active" id="viewMode" onclick="switchMode('view')">VIEW LIST</button>
+    <button class="mode-btn" id="addMode" onclick="switchMode('add')">ADD NEW ITEM</button>
+</div>
+
+<div class="header-nav" id="headerNav">
+    <div class="dropdown-container">
+        <select id="mainCatDrop" class="fancy-select" onchange="changeCat(this.value)"></select>
+        <select id="subPageDrop" class="fancy-select" onchange="changePage(this.value)"></select>
+    </div>
+    
+    <div class="header-icon" onclick="toggleSortBar()" style="margin-left: 5px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+    </div>
+    
+    <div class="header-icon" onclick="shareList()" title="Share List" style="margin-left: 5px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
     </div>
 
-    <div id="toastContainer" class="toast-container"></div>
+    <div class="header-icon" id="authBtn" onclick="openAuthModal()" style="font-size:20px;" title="Account">👤</div>
 
-    <div id="loginSection" class="card">
-        <h2 class="admin-title" style="margin-bottom: 20px;">Admin Login</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button class="btn btn-primary" style="width: 100%;" onclick="login()">Login</button>
-        <div class="footer-info">AL-Samad Mobile Headrajkan, Bahawalpur</div>
-    </div>
+    <div class="header-icon" onclick="toggleSettings(true)" style="font-size:22px;" title="Settings">⚙️</div>
+</div>
 
-    <div id="adminDashboard" class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 class="admin-title">Activation Admin Penal</h1>
-            
-            <div class="header-actions">
-                <button class="btn-add-icon" onclick="openAddUserModal()" title="Add New User">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
-                <button class="btn-logout" onclick="logout()" title="Logout">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2 style="margin-top:0; font-size:16px;">User Application: <span id="editingDisplay" onclick="copyLoadedSyncKey()" title="Click to Copy Loaded Sync Key" style="color:#e2e8f0; font-family: monospace; cursor: pointer; background: #0f172a; padding: 2px 8px; border-radius: 4px; border: 1px solid #334155; transition: all 0.2s ease; margin-left: 5px;">None</span></h2>
-            <textarea id="codeEditor" rows="8" placeholder="Paste Full HTML code here..." style="font-family: monospace; font-size: 13px;"></textarea>
-
-            <div class="editor-btn-row">
-                <button class="btn btn-magic-copy" onclick="copyHTMLContent()">📋 Copy</button>
-                <button class="btn btn-magic-clear" onclick="clearHTMLContent()">🧹 Clear</button>
-                <button class="btn btn-magic-push" onclick="updateContent()">🚀 Push Live</button>
-            </div>
-            <p style="font-size:11px; color:#64748b; margin:10px 0 0 0;">* CSS & Scripts will be preserved. Only title will be removed.</p>
-        </div>
-
-        <div class="card">
-            <div style="margin: 4px 4px 12px 4px; font-size:15px; font-weight:600; color:#cbd5e1; display:flex; align-items:center; gap:6px;">
-                📜 HTML Templates Manager
-            </div>
-            
-            <input type="hidden" id="editTemplateId" value="">
-            
-            <input type="text" id="templateTitle" placeholder="Template Code Title (e.g., Luxury UI, Standard POS)">
-            <textarea id="templateCode" rows="4" placeholder="Paste HTML template code here..." style="font-family: monospace; font-size: 13px;"></textarea>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;" class="template-actions">
-                <button id="saveTemplateBtn" class="btn btn-primary" onclick="saveTemplate()" style="background: var(--accent); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); flex: 1;">💾 Save Template</button>
-                <button id="cancelEditBtn" class="btn btn-secondary" onclick="cancelEditTemplate()" style="display: none; flex: 1;">❌ Cancel Edit</button>
-            </div>
-            
-            <div class="table-responsive" style="max-height: 180px; overflow-y: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Template Title</th>
-                            <th style="text-align: right; padding-right: 15px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="templateTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card" style="padding: 12px;">
-            <div style="margin: 8px 4px 16px 4px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                <div style="font-size:15px; font-weight:600; color:#cbd5e1; display:flex; align-items:center; gap:6px;">
-                    📋 Customers List
-                </div>
-                <input type="text" id="searchClient" class="search-input" placeholder="🔍 Search by Name or Title..." onkeyup="searchTable()">
-            </div>
-            
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Customer Name</th>
-                            <th>Application Title</th>
-                            <th>Status</th>
-                            <th>Clear Logs</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody"></tbody>
-                </table>
-            </div>
+<div class="container">
+    <div id="page-view" class="page-content active">
+        <div id="sortBar" style="display:none; gap:8px; margin-bottom:15px;">
+            <button onclick="setFilter('all')" class="mode-btn" style="background:#1e293b; color:white; font-size:12px;">All</button>
+            <button onclick="setFilter('pending')" class="mode-btn" style="background:#fee2e2; color:#b91c1c; font-size:12px;">Pending</button>
+            <button onclick="setFilter('complete')" class="mode-btn" style="background:#dcfce7; color:#15803d; font-size:12px;">Done</button>
         </div>
         
-        <div class="footer-info">AL-Samad Mobile Headrajkan, Bahawalpur</div>
+        <div class="item-card"><div id="itemList"></div></div>
     </div>
 
-    <div id="userModal" class="modal-overlay" onclick="closeUserModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 id="modalTitle" style="margin:0; color: var(--text); font-size: 16px;">➕ Add New User</h3>
-                <button class="close-modal" onclick="hideUserModal()" title="Close Popup">✕</button>
+    <div id="page-add" class="page-content">
+        <div class="add-card">
+            <label style="font-size:12px; font-weight:800; color:var(--primary); text-transform:uppercase; margin-bottom:10px; display:block;">Item Name</label>
+            <input type="text" id="taskInput" class="modern-input" placeholder="Enter name here...">
+            <div id="pageChips" style="margin-top:25px; display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:12px;"></div>
+
+            <button class="btn-main" style="margin-top:30px;" onclick="addItemsBulk()">CONFIRM & ADD TO STOCK</button>
+        </div>
+    </div>
+</div>
+
+<div class="chat-fab" onclick="toggleChat()">💬</div>
+<div class="chat-window" id="chatWidget">
+    <div class="chat-header">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span style="font-size: 14px;">Team Chat</span>
+            <span id="userNameDisplay" style="font-size: 9px; opacity: 0.8; cursor: pointer; text-decoration: underline;" onclick="changeChatUserName()"></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="cursor:pointer; font-size: 14px;" onclick="deleteChatHistory()" title="Delete Chat History">🗑️</span>
+            <span style="cursor:pointer;" onclick="toggleChat()">✕</span>
+        </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div style="font-size:12px; color:var(--text-sub); text-align:center;">Connecting...</div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+        <button class="chat-send-btn" onclick="sendChatMessage()">Send</button>
+    </div>
+</div>
+
+<div class="overlay" id="qtyModal">
+    <div class="modal">
+        <div class="modal-title-wrapper">
+            <h2>Quantity</h2>
+            <div class="modal-close-icon" onclick="closeQtyModal()">✕</div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:15px; margin-bottom:25px;">
+            <button class="mode-btn" style="max-width:60px; background:#f1f5f9; color:var(--primary); font-size:26px;" onclick="adjustQty(-1)">-</button>
+            <input type="number" id="modalQtyInput" value="1" class="qty-input-field">
+            <button class="mode-btn" style="max-width:60px; background:#f1f5f9; color:var(--primary); font-size:26px;" onclick="adjustQty(1)">+</button>
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:25px;">
+            <button class="sc-btn" onclick="setExactQty(3)">3</button>
+            <button class="sc-btn" onclick="setExactQty(5)">5</button>
+            <button class="sc-btn" onclick="setExactQty(10)">10</button>
+        </div>
+        <button class="btn-main" onclick="confirmQty()">SET QUANTITY</button>
+    </div>
+</div>
+
+<div class="overlay" id="itemModal">
+    <div class="modal">
+        <div class="modal-title-wrapper">
+            <h2 id="detName">Item Details</h2>
+            <div class="modal-close-icon" onclick="document.getElementById('itemModal').style.display='none'">✕</div>
+        </div>
+        <div id="globalList" style="max-height: 400px; overflow-y: auto;"></div>
+        <button class="btn-main" style="margin-top:20px; background:#1e293b;" onclick="document.getElementById('itemModal').style.display='none'">CLOSE</button>
+    </div>
+</div>
+
+<div class="overlay" id="authModal">
+    <div class="modal">
+        <div class="modal-title-wrapper">
+            <h2>Cloud Account</h2>
+            <div class="modal-close-icon" onclick="document.getElementById('authModal').style.display='none'">✕</div>
+        </div>
+        
+        <div id="authContent">
+            <input type="email" id="authEmail" class="modern-input" placeholder="Email Address" style="margin-bottom: 15px;">
+            <input type="password" id="authPassword" class="modern-input" placeholder="Password" style="margin-bottom: 20px;">
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="btn-main" onclick="handleLogin()">Login</button>
+                <button class="btn-main" style="background:#10b981; border-color:#059669;" onclick="handleSignUp()">Sign Up</button>
             </div>
-            <div style="margin-top: 5px;">
-                <input type="hidden" id="oldCode">
-                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Activation Code</label>
-                <input type="text" id="custCode" placeholder="Enter Activation Code">
-                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Sync Key</label>
-                <input type="text" id="custSync" placeholder="Enter Sync Key">
-                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Customer Name</label>
-                <input type="text" id="custName" placeholder="Enter Customer Name">
-                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">App Title</label>
-                <input type="text" id="custTitle" placeholder="Enter Application Title">
+        </div>
+
+        <div id="loggedInContent" style="display: none; text-align: center; padding: 15px 0;">
+            <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+            <p style="font-size: 14px; color: var(--text-sub); margin: 0;">Logged in securely as:</p>
+            <h3 id="userEmailDisplay" style="margin-top: 5px; color: var(--primary); word-break: break-all;"></h3>
+            <button class="btn-main" style="background: #fef2f2; color: var(--danger); border-color: #fecaca; margin-top: 20px;" onclick="handleLogout()">Logout Account</button>
+        </div>
+
+        <p id="authStatus" style="font-size:12px; text-align:center; margin-top:15px; color:var(--danger); font-weight:bold;"></p>
+    </div>
+</div>
+
+<div class="overlay" id="settingsModal">
+    <div class="modal" style="max-height: 90vh; overflow-y: auto;">
+        
+        <div class="modal-title-wrapper">
+            <h2>Settings Dashboard</h2>
+            <div class="modal-close-icon" onclick="toggleSettings(false)">✕</div>
+        </div>
+        
+        <div class="settings-tabs">
+            <button class="tab-btn active" id="btn-tab-struct" onclick="switchSetTab('tab-struct')">📁 Structure</button>
+            <button class="tab-btn" id="btn-tab-data" onclick="switchSetTab('tab-data')">💾 Data</button>
+            <button class="tab-btn" id="btn-tab-cloud" onclick="switchSetTab('tab-cloud')">☁️ Cloud</button>
+            <button class="tab-btn" id="btn-tab-system" onclick="switchSetTab('tab-system')">🚀 System</button>
+        </div>
+
+        <div id="tab-struct" class="settings-section active">
+            <div class="settings-card">
+                <label style="font-size:11px; font-weight:800; color:var(--text-sub); text-transform:uppercase; margin-bottom:8px; display:block;">Category</label>
+                <select id="setCatSelect" class="modern-input" style="padding:12px; margin-bottom:12px; font-size:15px; appearance:none;" onchange="updateSubSelectSettings()"></select>
                 
-                <label style="font-size:12px; color:#94a3b8; display:block; margin-bottom:4px;">Apply HTML Template (Optional)</label>
-                <select id="userTemplate">
-                    <option value="">-- Keep Existing Content / No Template --</option>
-                </select>
-            </div>
-            <div style="margin-top: 18px;">
-                <button class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 14px; font-weight: bold;" onclick="saveUser()">Save User</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="actionModal" class="modal-overlay" onclick="closeActionModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 id="actionModalTitle" style="margin:0; color: var(--text); font-size: 17px;">User Actions</h3>
-                <button class="close-modal" onclick="hideActionModal()" title="Close Popup">✕</button>
-            </div>
-            <div style="background: #111827; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 18px; font-size: 13px;">
-                <div style="margin-bottom: 6px; color: #94a3b8;">Activation Code: <b id="actionModalCode" style="color: var(--primary); font-size:14px; margin-left: 5px;"></b></div>
-                <div style="color: #94a3b8;">Sync Key: <code id="actionModalSyncKey" onclick="copySyncKey()" title="Click to Copy Sync Key" style="color: #e2e8f0; margin-left: 5px; cursor: pointer; background: #0f172a; padding: 2px 6px; border-radius: 4px; border: 1px solid #334155; transition: all 0.2s ease;"></code></div>
-            </div>
-            <div id="actionModalControls"></div>
-        </div>
-    </div>
-
-    <script>
-        // Smooth Splash Dismissal Logic Container
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('appSplashScreen');
-                if(splash) {
-                    splash.style.opacity = '0';
-                    setTimeout(() => {
-                        splash.style.display = 'none';
-                    }, 600);
-                }
-            }, 2500); 
-        });
-
-        if (localStorage.getItem('auth_remembered') === 'true') {
-            document.addEventListener("DOMContentLoaded", function() {
-                document.getElementById('adminDashboard').style.display = 'block';
-                document.getElementById('loginSection').style.display = 'none';
-            });
-        }
-
-        const firebaseConfig = { apiKey: "AIzaSyDJt_xJEwsj9jIXOiykRD21NqvejKQm2mU", projectId: "abdul-1st-project", databaseURL: "https://abdul-1st-project.firebaseio.com" };
-        firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
-        let currentSyncKey = ""; let cmdListeners = []; let globalUsersCache = {}; let globalTemplatesCache = {};
-
-        function magicAlert(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `smart-toast ${type}`;
-            let icon = type === 'success' ? "✅" : type === 'warn' ? "⚠️" : type === 'danger' ? "❌" : "💡";
-            toast.innerHTML = `<span>${icon} &nbsp; ${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(-10px) scale(0.9)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        function magicConfirm(message, isDangerous, onConfirm) {
-            const overlay = document.createElement('div');
-            overlay.className = 'confirm-overlay';
-            const box = document.createElement('div');
-            box.className = `confirm-box ${isDangerous ? 'danger-action' : ''}`;
-            box.innerHTML = `
-                <div class="confirm-msg">${message}</div>
-                <div class="confirm-btns">
-                    <button class="btn btn-secondary" id="confirmCancelBtn" style="padding: 10px 20px;">Cancel</button>
-                    <button class="btn ${isDangerous ? 'btn-danger' : 'btn-primary'}" id="confirmOkBtn" style="padding: 10px 20px; background: ${isDangerous ? '' : 'var(--accent)'};">Confirm</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <button class="sc-btn btn-secondary" onclick="editCat()">✏️ Rename</button>
+                    <button class="sc-btn btn-danger" onclick="delCat()">🗑️ Delete</button>
                 </div>
-            `;
-            overlay.appendChild(box);
-            document.body.appendChild(overlay);
-            document.getElementById('confirmCancelBtn').onclick = function() { overlay.remove(); };
-            document.getElementById('confirmOkBtn').onclick = function() { overlay.remove(); onConfirm(); };
-        }
+                <button class="btn-main" style="padding:14px; font-size:14px; border-radius:12px;" onclick="addCat()">+ Add New Category</button>
+            </div>
 
-        function copySyncKey() {
-            const syncKeyText = document.getElementById('actionModalSyncKey').innerText;
-            if(!syncKeyText || syncKeyText === '') return;
-            navigator.clipboard.writeText(syncKeyText).then(() => magicAlert("📋 Sync Key copied!", "success")).catch(() => {
-                const el = document.createElement('textarea'); el.value = syncKeyText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); magicAlert("📋 Sync Key copied!", "success");
-            });
-        }
-
-        function copyLoadedSyncKey() {
-            const loadedKeyText = document.getElementById('editingDisplay').innerText;
-            if(!loadedKeyText || loadedKeyText === 'None' || loadedKeyText === '') return;
-            navigator.clipboard.writeText(loadedKeyText).then(() => magicAlert("📋 Loaded Sync Key copied!", "success")).catch(() => {
-                const el = document.createElement('textarea'); el.value = loadedKeyText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); magicAlert("📋 Loaded Sync Key copied!", "success");
-            });
-        }
-
-        function login() {
-            const e = document.getElementById('email').value; const p = document.getElementById('password').value;
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => auth.signInWithEmailAndPassword(e, p)).then(() => localStorage.setItem('auth_remembered', 'true')).catch(err => magicAlert(err.message, 'danger'));
-        }
-        function logout() { localStorage.removeItem('auth_remembered'); auth.signOut().then(() => location.reload()); }
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                localStorage.setItem('auth_remembered', 'true');
-                document.getElementById('adminDashboard').style.display = 'block';
-                document.getElementById('loginSection').style.display = 'none';
-                loadUsers(); loadTemplates();
-            } else {
-                localStorage.removeItem('auth_remembered');
-                document.getElementById('loginSection').style.display = 'block';
-                document.getElementById('adminDashboard').style.display = 'none';
-            }
-        });
-
-        document.querySelectorAll('input, textarea, select').forEach(element => {
-            element.addEventListener('focus', function() { setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300); });
-        });
-
-        function searchTable() {
-            let input = document.getElementById("searchClient").value.toLowerCase();
-            let rows = document.getElementById("userTableBody").getElementsByTagName("tr");
-            for (let i = 0; i < rows.length; i++) {
-                let nameCol = rows[i].getElementsByTagName("td")[0]; let titleCol = rows[i].getElementsByTagName("td")[1];
-                if (nameCol || titleCol) {
-                    let nameText = nameCol.textContent || nameCol.innerText; let titleText = titleCol.textContent || titleCol.innerText;
-                    if (nameText.toLowerCase().indexOf(input) > -1 || titleText.toLowerCase().indexOf(input) > -1) { rows[i].style.display = ""; } else { rows[i].style.display = "none"; }
-                }
-            }
-        }
-
-        function copyHTMLContent() {
-            const editor = document.getElementById('codeEditor');
-            if(!editor.value.trim()) { magicAlert("Box is already empty! Nothing to copy.", 'warn'); return; }
-            editor.select(); editor.setSelectionRange(0, 99999);
-            try { navigator.clipboard.writeText(editor.value); magicAlert("📋 Text copied!", 'success'); } catch (err) { document.execCommand('copy'); magicAlert("📋 Text copied!", 'success'); }
-        }
-
-        function clearHTMLContent() { magicConfirm("🧹 Clear all text from the HTML editor box?", false, () => { document.getElementById('codeEditor').value = ""; magicAlert("Box cleared!", "success"); }); }
-
-        function loadUsers() {
-            db.ref('admin/codes').on('value', snap => {
-                const tbody = document.getElementById('userTableBody');
-                tbody.innerHTML = ""; cmdListeners.forEach(ref => ref.off()); cmdListeners = []; globalUsersCache = {};
-                snap.forEach(child => {
-                    const code = child.key; const d = child.val(); const syncKey = d.syncKey;
-                    let sClass = d.status === 'active' ? 'active' : 'used';
-                    globalUsersCache[code] = { code, syncKey, name: d.customerName || '-', title: d.appTitle || '-', status: d.status };
-                    const tr = document.createElement('tr'); tr.id = `row_${code}`; tr.setAttribute('onclick', `openActionModal('${code}')`);
-                    tr.innerHTML = `<td><b style="color: #f8fafc; font-size:14px;">${d.customerName || '-'}</b></td>
-                        <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${d.appTitle || '-'}</td>
-                        <td style="white-space: nowrap;"><span class="status-pill ${sClass}">${d.status}</span></td>
-                        <td id="log_${code}" style="white-space: nowrap;"><span style='color:#64748b; font-size:11px;'>Loading...</span></td>`;
-                    tbody.appendChild(tr);
-
-                    const cmdRef = db.ref('admin/commands/' + syncKey); cmdListeners.push(cmdRef);
-                    cmdRef.on('value', cmdSnap => {
-                        const cmd = cmdSnap.val(); let clearLogHTML = "<span style='color:#64748b; font-size:11px;'>No Command</span>";
-                        const rowEl = document.getElementById(`row_${code}`);
-                        if (rowEl) { rowEl.classList.remove('danger-row'); rowEl.classList.remove('warning-row'); }
-
-                        if (cmd && (cmd.action === 'clear' || cmd.action === 'clear_all')) {
-                            if (cmd.status === 'pending') { 
-                                if (cmd.action === 'clear_all') { clearLogHTML = `<span class="clear-danger-pending">⏳ Full Reset...</span>`; if(rowEl) rowEl.classList.add('danger-row'); } 
-                                else { clearLogHTML = `<span class="clear-pending">⏳ Session Clear...</span>`; if(rowEl) rowEl.classList.add('warning-row'); }
-                            }
-                            else if (cmd.status === 'applied') { 
-                                if (cmd.action === 'clear_all') { clearLogHTML = `<span class="clear-applied">✅ Reset Done</span>`; } 
-                                else { clearLogHTML = `<span class="clear-applied">✅ Session Done</span>`; }
-                            }
-                        }
-                        const logEl = document.getElementById('log_' + code); if(logEl) logEl.innerHTML = clearLogHTML;
-                        if(document.getElementById('actionModal').style.display === 'flex' && document.getElementById('actionModalCode').innerText === code) { renderAdvancedButtons(code, syncKey, d.status, cmd); }
-                    });
-                }); searchTable();
-            });
-        }
-
-        // --- NEW UPDATED TEMPLATE MANAGEMENT LOGIC ---
-        function loadTemplates() {
-            db.ref('admin/templates').on('value', snap => {
-                globalTemplatesCache = {};
-                const selectElement = document.getElementById('userTemplate');
-                const tbody = document.getElementById('templateTableBody');
+            <div class="settings-card">
+                <label style="font-size:11px; font-weight:800; color:var(--text-sub); text-transform:uppercase; margin-bottom:8px; display:block;">Sub-Page</label>
+                <select id="setSubSelect" class="modern-input" style="padding:12px; margin-bottom:12px; font-size:15px; appearance:none;"></select>
                 
-                selectElement.innerHTML = '<option value="">-- Keep Existing Content / No Template --</option>';
-                tbody.innerHTML = "";
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+                    <button class="sc-btn btn-secondary" onclick="editSub()">✏️ Rename</button>
+                    <button class="sc-btn btn-danger" onclick="delSub()">🗑️ Delete</button>
+                </div>
+                <button class="btn-main" style="padding:14px; font-size:14px; border-radius:12px; margin-bottom: 12px;" onclick="addSub()">+ Add New Sub-Page</button>
+                
+                <button class="sc-btn btn-danger" style="width:100%; border-style: dashed;" onclick="clearSubPageItems()">⚠️ Clear All Items</button>
+            </div>
+        </div>
 
-                snap.forEach(child => {
-                    const id = child.key;
-                    const data = child.val();
-                    // Store both title and html in cache
-                    globalTemplatesCache[id] = { title: data.title, html: data.html };
+        <div id="tab-data" class="settings-section">
+            <div class="settings-card">
+                <label style="font-size:11px; font-weight:800; color:var(--text-sub); text-transform:uppercase; margin-bottom:8px; display:block;">Data Management</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <button class="sc-btn btn-export" onclick="exportData()">📤 Export JSON</button>
+                    <button class="sc-btn btn-import" onclick="document.getElementById('importFile').click()">📥 Import JSON</button>
+                </div>
+                <button class="sc-btn" style="width:100%; padding:14px; background:#f0f9ff; color:#0369a1; border-color:#bae6fd;" onclick="exportListAsTxt()">📄 Download List (.txt)</button>
+                <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importData(event)">
+            </div>
+        </div>
 
-                    const opt = document.createElement('option');
-                    opt.value = id; opt.innerText = data.title;
-                    selectElement.appendChild(opt);
+        <div id="tab-cloud" class="settings-section">
+            <div class="settings-card">
+                <label style="font-size:11px; font-weight:800; color:var(--text-sub); text-transform:uppercase; margin-bottom:12px; display:block;">☁️ Cloud Sync (Firebase)</label>
+                
+                <button class="sc-btn btn-secondary" style="width:100%; margin-bottom: 15px; padding: 12px; font-weight: 800; font-size: 14px;" onclick="changeChatUserName()">💬 Change Chat Username</button>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 12px;">
+                    <button class="sc-btn" style="background:#f0f9ff; color:#0369a1; border-color:#bae6fd;" onclick="syncToCloud()">⬆️ Push Data</button>
+                    <button class="sc-btn" onclick="syncFromCloud()">⬇️ Pull & Merge</button>
+                </div>
+                <p id="syncStatus" style="font-size:11px; color:var(--text-sub); margin-bottom:15px; text-align:center;"></p>
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><b style="color: #f8fafc; font-size:13.5px;">${data.title}</b></td>
-                        <td style="text-align: right; padding-right: 15px; white-space: nowrap;">
-                            <button class="btn btn-edit" style="padding: 5px 10px; font-size: 11px; margin-right: 5px;" onclick="editTemplate('${id}')">✏️ Edit</button>
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="deleteTemplate('${id}')">🗑️ Delete</button>
-                        </td>`;
-                    tbody.appendChild(tr);
+                <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding-top:10px; border-top:1px solid #f1f5f9;" onclick="toggleFBConfig()">
+                    <label style="font-size:10px; font-weight:800; color:var(--text-sub); text-transform:uppercase; cursor:pointer;">Advanced Config</label>
+                    <span id="cfgArrow" style="font-size:10px; color:var(--text-sub);">▼</span>
+                </div>
+                
+                <div id="firebaseConfigInputs" style="display: none; gap: 8px; flex-direction: column; margin-top: 12px;">
+                    <input type="text" id="fbApiKey" class="modern-input" style="display:none;" placeholder="API Key">
+                    <input type="text" id="fbProjId" class="modern-input" style="display:none;" placeholder="Project ID">
+                    <input type="text" id="fbAuthDom" class="modern-input" style="display:none;" placeholder="Auth Domain">
+                    <input type="text" id="fbAppId" class="modern-input" style="display:none;" placeholder="App ID">
+                    <label style="font-size:10px; font-weight:800; color:var(--text-sub); margin-top:8px;">Sync Key</label>
+                    <input type="text" id="fbSyncKey" class="modern-input" style="padding:12px; font-size:14px;" placeholder="Your Secret Sync Key">
+                </div>
+                
+                <button class="sc-btn" style="width:100%; margin-top:15px; background:#eef2ff; color:#4f46e5; border-color:#c7d2fe;" onclick="viewAllSyncKeys()">🔍 View All Used Sync Keys</button>
+                <div id="syncKeysList" style="margin-top:10px; font-size:12px; color:var(--text-sub); word-break:break-all; text-align:center;"></div>
+            </div>
+        </div>
+
+        <div id="tab-system" class="settings-section">
+            <div class="settings-card">
+                <label style="font-size:11px; font-weight:800; color:var(--text-sub); text-transform:uppercase; margin-bottom:12px; display:block;">📱 OTA App Update</label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom: 12px;">
+                    <button class="sc-btn" style="background:#fef3c7; color:#92400e; border-color:#fde68a;" onclick="pushAppUpdate()">⬆️ Push App HTML</button>
+                    <button class="sc-btn" style="background:#dcfce7; color:#15803d; border-color:#bbf7d0;" onclick="pullAppUpdate()">⬇️ Install Update</button>
+                </div>
+                <button class="sc-btn" style="width:100%; margin-bottom: 12px; background:#e0e7ff; color:#3730a3; border-color:#c7d2fe;" onclick="showPasteHtmlModal()">✏️ Update via HTML Code</button>
+                <p id="otaStatus" style="font-size:11px; color:var(--text-sub); margin-bottom:5px; text-align:center;"></p>
+            </div>
+        </div>
+
+        <button class="close-btn" onclick="toggleSettings(false)">DONE</button>
+    </div>
+</div>
+
+<div class="overlay" id="htmlUpdateModal">
+    <div class="modal">
+        <div class="modal-title-wrapper">
+            <h2>Update via HTML Code</h2>
+            <div class="modal-close-icon" onclick="document.getElementById('htmlUpdateModal').style.display='none'">✕</div>
+        </div>
+        <textarea id="rawHtmlInput" class="modern-input" style="height: 180px; font-family: monospace; font-size: 12px; resize: vertical; margin-bottom: 15px;" placeholder="Paste new app HTML code here..."></textarea>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn-main" style="padding:14px; font-size:14px;" onclick="applyHtmlUpdate()">📥 DOWNLOAD</button>
+            <button class="btn-main" style="padding:14px; font-size:14px; background:#10b981;" onclick="pushPastedHtml()">⬆️ PUSH TO CLOUD</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="syncDataModal">
+    <div class="modal" style="max-height: 90vh; overflow-y: auto; background: #f8fafc;">
+        <div class="modal-title-wrapper">
+            <h2 id="syncDataTitle" style="font-size: 16px; word-break: break-all;">Key Data</h2>
+            <div class="modal-close-icon" onclick="document.getElementById('syncDataModal').style.display='none'">✕</div>
+        </div>
+        <div id="syncDataContent" style="font-size: 13px; color: var(--text-main); background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; min-height: 100px;"></div>
+        <button class="btn-main" style="margin-top:20px; background:#1e293b;" onclick="document.getElementById('syncDataModal').style.display='none'">CLOSE DATA</button>
+    </div>
+</div>
+
+<script>
+    // CORE GLOBAL VARIABLES
+    let db = { "General": { "List": [] } };
+    let curCat = "General";
+    let curPage = "List";
+    let filterStatus = 'all', chipSelections = {}, activeChipPage = "", openItemName = "";
+    let chatUserName = "User" + Math.floor(Math.random() * 1000);
+    let fbApp, fbDB, fbAuth, chatUnsubscribe = null;
+
+    // STRING ESCAPING HELPER
+    function esc(str) {
+        if (str === null || str === undefined) return '';
+        return str.toString().replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // SAFE INITIALIZATION BLOCK
+    try {
+        let storedData = localStorage.getItem('taskDB');
+        if (storedData) {
+            let parsed = JSON.parse(storedData);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                db = parsed;
+            }
+        }
+        
+        curCat = localStorage.getItem('curCat') || Object.keys(db)[0] || "General";
+        curPage = localStorage.getItem('curPage') || "List";
+
+        let savedName = localStorage.getItem('chat_username');
+        if (savedName) {
+            chatUserName = savedName;
+        } else {
+            localStorage.setItem('chat_username', chatUserName);
+        }
+    } catch (e) {
+        console.error("Critical Initialization Error. Resetting defaults.", e);
+        db = { "General": { "List": [] } };
+    }
+
+    function save() { 
+        try {
+            localStorage.setItem('taskDB', JSON.stringify(db)); 
+            localStorage.setItem('curCat', curCat); 
+            localStorage.setItem('curPage', curPage); 
+        } catch(e) { console.error("Save Error", e); }
+    }
+
+    function switchMode(m) {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        let pm = document.getElementById(`page-${m}`); if(pm) pm.classList.add('active');
+        let bm = document.getElementById(`${m}Mode`); if(bm) bm.classList.add('active');
+        let hn = document.getElementById('headerNav'); if(hn) hn.style.display = (m === 'add') ? 'none' : 'flex';
+        init();
+    }
+
+    function init() { 
+        try {
+            renderHeader(); 
+            renderList(); 
+            renderChips(); 
+            populateSettings(); 
+        } catch(e) {
+            console.error("Init Error:", e);
+        }
+    }
+
+    function renderHeader() {
+        const catD = document.getElementById('mainCatDrop');
+        const subD = document.getElementById('subPageDrop');
+        if(!catD || !subD) return;
+        catD.innerHTML = ''; subD.innerHTML = '<option value="ALL">All Data</option>';
+        Object.keys(db).forEach(c => {
+            let o = document.createElement('option'); o.value = c; o.innerText = c;
+            if(c === curCat) o.selected = true; catD.appendChild(o);
+        });
+        if(db[curCat]) {
+            Object.keys(db[curCat]).forEach(s => {
+                let o = document.createElement('option'); o.value = s; o.innerText = s;
+                if(s === curPage) o.selected = true; subD.appendChild(o);
+            });
+        }
+    }
+
+    function changeCat(v) { curCat = v; curPage = "ALL"; save(); init(); }
+    function changePage(v) { curPage = v; save(); init(); }
+
+    function renderList() {
+        const container = document.getElementById('itemList'); 
+        if(!container) return;
+        container.innerHTML = '';
+        if(!db[curCat]) return;
+
+        if (curPage === "ALL") {
+            let merged = {};
+            Object.keys(db[curCat]).forEach(pg => {
+                (db[curCat][pg] || []).forEach(it => {
+                    if (!merged[it.text]) merged[it.text] = { qty: 0, done: true };
+                    merged[it.text].qty += parseInt(it.qty) || 0;
+                    if (!it.done) merged[it.text].done = false;
                 });
             });
-        }
-
-        function saveTemplate() {
-            const editId = document.getElementById('editTemplateId').value;
-            const titleInput = document.getElementById('templateTitle');
-            const codeInput = document.getElementById('templateCode');
-            const title = titleInput.value.trim();
-            const html = codeInput.value.trim();
-
-            if (!title || !html) { magicAlert("Template Title and HTML Code both are required!", "warn"); return; }
-
-            if (editId) {
-                // Update Existing Template
-                db.ref('admin/templates/' + editId).update({ title: title, html: html }).then(() => {
-                    cancelEditTemplate(); // Reset form
-                    magicAlert("Template updated successfully!", "success");
-                }).catch(err => magicAlert(err.message, "danger"));
-            } else {
-                // Save New Template
-                db.ref('admin/templates').push({ title: title, html: html }).then(() => {
-                    titleInput.value = ""; codeInput.value = "";
-                    magicAlert("Template saved successfully!", "success");
-                }).catch(err => magicAlert(err.message, "danger"));
-            }
-        }
-
-        function editTemplate(id) {
-            const tData = globalTemplatesCache[id];
-            if(!tData) return;
-            
-            document.getElementById('editTemplateId').value = id;
-            document.getElementById('templateTitle').value = tData.title;
-            document.getElementById('templateCode').value = tData.html;
-            
-            // Change Save Button Style to Update Mode
-            const saveBtn = document.getElementById('saveTemplateBtn');
-            saveBtn.innerHTML = "🔄 Update Template";
-            saveBtn.style.background = "var(--primary)";
-            
-            document.getElementById('cancelEditBtn').style.display = "inline-flex";
-            window.scrollTo({ top: document.getElementById('templateTitle').offsetTop - 50, behavior: 'smooth' });
-        }
-
-        function cancelEditTemplate() {
-            document.getElementById('editTemplateId').value = "";
-            document.getElementById('templateTitle').value = "";
-            document.getElementById('templateCode').value = "";
-            
-            // Revert Save Button Style
-            const saveBtn = document.getElementById('saveTemplateBtn');
-            saveBtn.innerHTML = "💾 Save Template";
-            saveBtn.style.background = "var(--accent)";
-            
-            document.getElementById('cancelEditBtn').style.display = "none";
-        }
-
-        function deleteTemplate(id) {
-            magicConfirm("Are you sure you want to permanently delete this template?", true, () => {
-                db.ref('admin/templates/' + id).remove().then(() => {
-                    if (document.getElementById('editTemplateId').value === id) cancelEditTemplate();
-                    magicAlert("Template deleted successfully.", "success");
-                }).catch(err => magicAlert(err.message, "danger"));
+            Object.keys(merged).forEach(name => {
+                const item = merged[name];
+                if (filterStatus === 'pending' && item.done) return;
+                if (filterStatus === 'complete' && !item.done) return;
+                
+                container.innerHTML += `<div class="item">
+                    <div class="qty-circle">${item.qty}</div>
+                    <span class="task-name" onclick="openGlobalModal('${esc(name)}')">${name}</span>
+                    <button class="badge ${item.done?'done':'pending'}" onclick="openGlobalModal('${esc(name)}')">${item.done?'Done':'Pending'}</button>
+                    <span class="del" onclick="removeAllInstances('${esc(name)}')">✕</span>
+                </div>`;
+            });
+        } else {
+            (db[curCat][curPage] || []).forEach((it, idx) => {
+                if (filterStatus === 'pending' && it.done) return;
+                if (filterStatus === 'complete' && !it.done) return;
+                
+                container.innerHTML += `<div class="item">
+                    <div class="qty-circle">${it.qty}</div>
+                    <span class="task-name" onclick="openGlobalModal('${esc(it.text)}')">${it.text}</span>
+                    <button class="badge ${it.done?'done':'pending'}" onclick="toggleStatus('${esc(curCat)}', '${esc(curPage)}', ${idx})">${it.done?'Done':'Pending'}</button>
+                    <span class="del" onclick="removeItem('${esc(curPage)}', ${idx})">✕</span>
+                </div>`;
             });
         }
-        // ------------------------------------------------
+    }
 
-        function openActionModal(code) {
-            const user = globalUsersCache[code]; if(!user) return;
-            document.getElementById('actionModalTitle').innerText = "📋 " + user.name; document.getElementById('actionModalCode').innerText = user.code; document.getElementById('actionModalSyncKey').innerText = user.syncKey;
-            db.ref('admin/commands/' + user.syncKey).once('value').then(snap => { renderAdvancedButtons(user.code, user.syncKey, user.status, snap.val()); document.getElementById('actionModal').style.display = "flex"; });
+    function removeAllInstances(name) {
+        if(confirm(`Delete "${name}" entirely from ALL pages in this category?`)) {
+            Object.keys(db[curCat]).forEach(pg => {
+                db[curCat][pg] = (db[curCat][pg] || []).filter(it => it.text !== name);
+            });
+            save(); renderList();
         }
+    }
 
-        function renderAdvancedButtons(code, syncKey, status, cmd) {
-            const container = document.getElementById('actionModalControls');
-            let cmdBtnHTML = `<button class="btn btn-warn" style="padding:12px;" onclick="remoteClear('${syncKey}', 'session')">Clear Session</button> <button class="btn btn-danger" style="padding:12px;" onclick="remoteClear('${syncKey}', 'all')">Full Reset Wipe</button>`;
-            if (cmd && cmd.status === 'pending') { cmdBtnHTML = `<button class="btn btn-warn" style="grid-column: span 2; background: rgba(245,158,11,0.2); padding:12px;" onclick="stopClear('${syncKey}')">⛔ Stop Pending Command</button>`; }
-            container.innerHTML = `<div class="action-grid"> <button class="btn btn-edit" style="padding:12px;" onclick="editMeta('${code}'); hideActionModal();">📝 Edit Meta Info</button> <button class="btn" style="background:rgba(99,102,241,0.15); color:#6366f1; padding:12px; border: 1px solid rgba(99,102,241,0.2);" onclick="loadHTML('${syncKey}'); hideActionModal();">📂 Load User App</button> </div> <div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Status Options Directory</div> <div class="action-grid"> <button class="btn btn-edit" style="padding:12px; background: rgba(16, 185, 129, 0.15); color: var(--accent);" onclick="toggleStatus('${code}', 'active')">🔓 Set Active</button> <button class="btn btn-warn" style="padding:12px; background: rgba(245, 158, 11, 0.15); color: var(--warning);" onclick="toggleStatus('${code}', 'used')">🔒 Set Used</button> </div> <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:10px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Remote Database Options</div> <div class="action-grid">${cmdBtnHTML}</div> <div style="font-size:11px; color:#64748b; font-weight:600; margin-top:10px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Danger Control</div> <div class="action-grid" style="grid-template-columns: 1fr;"> <button class="btn btn-danger" style="padding:12px; background: rgba(239, 68, 68, 0.25);" onclick="delUser('${code}','${syncKey}'); hideActionModal();">🗑️ Delete User Account</button> </div>`;
+    function removeSpecificInstance(cat, pg, idx, name) {
+        if(confirm(`Remove "${name}" from ${pg}?`)) {
+            if(db[cat] && db[cat][pg]) {
+                db[cat][pg].splice(idx, 1); save(); renderList();
+                let stillExists = false;
+                Object.keys(db[cat]).forEach(p => { if((db[cat][p]||[]).some(it => it.text === name)) stillExists = true; });
+                if(stillExists) openGlobalModal(name);
+                else { let im = document.getElementById('itemModal'); if(im) im.style.display = 'none'; }
+            }
         }
+    }
 
-        function toggleStatus(c, newStatus) { db.ref('admin/codes/' + c).update({ status: newStatus }).then(() => magicAlert("Status explicitly changed to " + newStatus.toUpperCase(), "success")); }
-        function hideUserModal() { document.getElementById('userModal').style.display = "none"; }
-        function hideActionModal() { document.getElementById('actionModal').style.display = "none"; }
-        function closeUserModal(e) { if(e.target.id === 'userModal') hideUserModal(); }
-        function closeActionModal(e) { if(e.target.id === 'actionModal') hideActionModal(); }
+    function renderChips() {
+        const container = document.getElementById('pageChips'); 
+        if(!container) return;
+        container.innerHTML = '';
+        if(!db[curCat]) return;
+        Object.keys(db[curCat]).forEach(s => {
+            const isSelected = chipSelections[s] !== undefined;
+            const chip = document.createElement('div');
+            chip.style.padding = '14px 10px'; chip.style.background = isSelected ? '#eef2ff' : '#f1f5f9';
+            chip.style.borderRadius = '16px'; chip.style.textAlign = 'center'; chip.style.cursor = 'pointer';
+            chip.style.fontWeight = '700'; chip.style.fontSize = '14px';
+            chip.style.border = isSelected ? '2px solid #4f46e5' : '1px solid #e2e8f0';
+            chip.style.boxShadow = isSelected ? '0 4px 6px -1px rgba(79, 70, 229, 0.2)' : '0 1px 2px rgba(0,0,0,0.05)';
+            chip.style.color = isSelected ? '#4f46e5' : '#1e293b';
+            chip.innerHTML = `<span>${s}</span>${isSelected ? `<br><span style='font-size:11px; opacity: 0.8;'>Qty: ${chipSelections[s]}</span>` : ''}`;
+            chip.onclick = () => { activeChipPage = s; let mqi = document.getElementById('modalQtyInput'); if(mqi) mqi.value = chipSelections[s] || "1"; let qm = document.getElementById('qtyModal'); if(qm) qm.style.display = 'flex'; };
+            container.appendChild(chip);
+        });
+    }
+
+    function adjustQty(v) { let i = document.getElementById('modalQtyInput'); if(i) i.value = Math.max(1, parseInt(i.value)+v); }
+    function setExactQty(v) { let i = document.getElementById('modalQtyInput'); if(i) i.value = v; }
+    function confirmQty() { let i = document.getElementById('modalQtyInput'); if(i) chipSelections[activeChipPage] = i.value; closeQtyModal(); }
+    function closeQtyModal() { let q = document.getElementById('qtyModal'); if(q) q.style.display='none'; renderChips(); }
+
+    function addItemsBulk() {
+        const ti = document.getElementById('taskInput');
+        const txt = ti ? ti.value.trim() : "";
+        if(!txt) return alert("Enter a name");
+        const targets = Object.keys(chipSelections);
+        if(targets.length === 0) return alert("Select at least one page");
+        targets.forEach(p => {
+            if(!db[curCat][p]) db[curCat][p] = [];
+            db[curCat][p].push({text: txt, qty: chipSelections[p], done: false});
+        });
+        if(ti) ti.value = ''; chipSelections = {}; save(); switchMode('view');
+    }
+
+    function openGlobalModal(name) {
+        openItemName = name; 
+        let dn = document.getElementById('detName'); if(dn) dn.innerText = name;
+        const list = document.getElementById('globalList'); 
+        if(!list) return;
+        list.innerHTML = '';
+        Object.keys(db).forEach(c => {
+            Object.keys(db[c]).forEach(p => {
+                (db[c][p] || []).forEach((it, idx) => {
+                    if(it.text === name) {
+                        const bClass = it.done ? 'done' : 'pending';
+                        list.innerHTML += `<div class="item">
+                            <div class="qty-circle" style="background:white; border:1px solid #eee;">${it.qty}</div>
+                            <span style="flex:1; font-weight:600; font-size:15px;">${p}</span>
+                            <button class="badge ${bClass}" onclick="toggleStatus('${esc(c)}', '${esc(p)}', ${idx}, true)">${it.done?'Done':'Pending'}</button>
+                            <span class="del" onclick="removeSpecificInstance('${esc(c)}', '${esc(p)}', ${idx}, '${esc(name)}')">✕</span>
+                        </div>`;
+                    }
+                });
+            });
+        });
+        let im = document.getElementById('itemModal'); if(im) im.style.display = 'flex';
+    }
+
+    function toggleStatus(cat, pg, idx, isPopup = false) { 
+        if(db[cat] && db[cat][pg] && db[cat][pg][idx]) {
+            db[cat][pg][idx].done = !db[cat][pg][idx].done; save(); if(isPopup) openGlobalModal(openItemName); renderList(); 
+        }
+    }
+    
+    function toggleSortBar() { let sb = document.getElementById('sortBar'); if(sb) sb.style.display = (sb.style.display === 'none' ? 'flex' : 'none'); }
+    function setFilter(f) { filterStatus = f; renderList(); }
+    
+    // TAB LOGIC FOR SETTINGS
+    function switchSetTab(tabId) {
+        document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         
-        function openAddUserModal() { document.getElementById('modalTitle').innerText = "➕ Add New User"; document.getElementById('oldCode').value = ""; document.getElementById('custCode').value = ""; document.getElementById('custSync').value = ""; document.getElementById('custName').value = ""; document.getElementById('custTitle').value = ""; document.getElementById('userTemplate').value = ""; document.getElementById('userModal').style.display = "flex"; }
+        let targetSec = document.getElementById(tabId);
+        let targetBtn = document.getElementById('btn-' + tabId);
         
-        function editMeta(c) { db.ref('admin/codes/' + c).once('value').then(s => { const d = s.val(); document.getElementById('modalTitle').innerText = "📝 Edit User Meta"; document.getElementById('oldCode').value = c; document.getElementById('custCode').value = c; document.getElementById('custSync').value = d.syncKey; document.getElementById('custName').value = d.customerName; document.getElementById('custTitle').value = d.appTitle; document.getElementById('userTemplate').value = ""; document.getElementById('userModal').style.display = "flex"; }); }
+        if(targetSec) targetSec.classList.add('active');
+        if(targetBtn) targetBtn.classList.add('active');
+    }
+
+    function toggleSettings(s) { 
+        let sm = document.getElementById('settingsModal');
+        if(sm) sm.style.display = s ? 'flex' : 'none'; 
+        if(s) { switchSetTab('tab-struct'); } 
+        if(!s) init(); 
+    }
+    
+    function populateSettings() {
+        const catS = document.getElementById('setCatSelect'); 
+        if(!catS) return;
+        catS.innerHTML = '';
+        Object.keys(db).forEach(c => { let o = document.createElement('option'); o.value = c; o.innerText = c; if(c===curCat) o.selected=true; catS.appendChild(o); });
+        updateSubSelectSettings();
+    }
+    
+    function updateSubSelectSettings() {
+        const catS = document.getElementById('setCatSelect');
+        if(!catS || !catS.value) return;
+        const cat = catS.value; 
+        const subS = document.getElementById('setSubSelect'); 
+        if(!subS) return;
+        subS.innerHTML = '';
+        if(db[cat]) Object.keys(db[cat]).forEach(s => { let o = document.createElement('option'); o.value = s; o.innerText = s; subS.appendChild(o); });
+    }
+    
+    function clearSubPageItems() {
+        const c = document.getElementById('setCatSelect').value; const s = document.getElementById('setSubSelect').value;
+        if(db[c] && db[c][s]) {
+            if(confirm(`WARNING: Are you sure you want to permanently delete ALL items in "${s}"?`)) {
+                db[c][s] = []; save(); renderList(); alert(`All items in "${s}" have been cleared.`);
+            }
+        }
+    }
+
+    function addCat() { let n = prompt("New Category Name:"); if(n && !db[n]) { db[n] = {"General":[]}; save(); populateSettings(); } }
+    function editCat() { let old = document.getElementById('setCatSelect').value; let n = prompt("Rename Category:", old); if(n && n !== old) { db[n]=db[old]; delete db[old]; save(); populateSettings(); } }
+    function delCat() { let t = document.getElementById('setCatSelect').value; if(Object.keys(db).length > 1 && confirm('Delete Category?')) { delete db[t]; save(); populateSettings(); } }
+    function addSub() { let c = document.getElementById('setCatSelect').value; let n = prompt("New Sub-Page Name:"); if(n && !db[c][n]) { db[c][n] = []; save(); updateSubSelectSettings(); } }
+    function editSub() { let c = document.getElementById('setCatSelect').value; let old = document.getElementById('setSubSelect').value; let n = prompt("Rename Sub-Page:", old); if(n && n !== old) { db[c][n]=db[c][old]; delete db[c][old]; save(); updateSubSelectSettings(); } }
+    function delSub() { let c = document.getElementById('setCatSelect').value; let t = document.getElementById('setSubSelect').value; if(Object.keys(db[c]).length > 1 && confirm('Delete Sub-Page?')) { delete db[c][t]; save(); updateSubSelectSettings(); } }
+    function removeItem(pg, i) { if(confirm('Remove?')) { db[curCat][pg].splice(i,1); save(); renderList(); } }
+
+    function exportData() {
+        const dataStr = JSON.stringify(db, null, 2); const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob); const a = document.createElement('a');
+        a.href = url; a.download = `TaskDB_Backup_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedDB = JSON.parse(e.target.result);
+                if (typeof importedDB === 'object' && importedDB !== null && !Array.isArray(importedDB)) {
+                    Object.keys(importedDB).forEach(importCat => {
+                        if (!db[importCat]) db[importCat] = {}; 
+                        Object.keys(importedDB[importCat]).forEach(importPg => {
+                            if (!db[importCat][importPg]) db[importCat][importPg] = []; 
+                            (importedDB[importCat][importPg] || []).forEach(importItem => {
+                                let existingItem = db[importCat][importPg].find(it => it.text === importItem.text);
+                                if (existingItem) {
+                                    existingItem.qty = (parseInt(existingItem.qty) + parseInt(importItem.qty)).toString();
+                                    if (!importItem.done) existingItem.done = false;
+                                } else db[importCat][importPg].push(importItem);
+                            });
+                        });
+                    });
+                    curCat = Object.keys(db)[0] || "General"; curPage = "ALL";
+                    save(); alert("Data imported and merged successfully! Old data was kept."); 
+                    toggleSettings(false); init();
+                } else alert("Invalid backup file format.");
+            } catch (err) { alert("Error reading file."); console.error(err); }
+        };
+        reader.readAsText(file); event.target.value = '';
+    }
+
+    async function shareList() {
+        if(!db) return alert("No data to share");
+        const dataStr = JSON.stringify(db, null, 2); const fileName = `TaskDB_Share_${new Date().toISOString().split('T')[0]}.json`;
+        const blob = new Blob([dataStr], { type: "application/json" }); const file = new File([blob], fileName, { type: "application/json" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try { await navigator.share({ files: [file], title: 'Task Manager Data', text: 'Exported task database JSON file.' }); } 
+            catch (err) { if (err.name !== 'AbortError') exportData(); }
+        } else { exportData(); alert("File sharing not supported. The JSON file has been downloaded instead."); }
+    }
+
+    function exportListAsTxt() {
+        if(!db || !db[curCat]) return alert("No data to export");
+        let text = `📋 Task List: ${curCat} (${curPage})\nGenerated on: ${new Date().toLocaleString()}\n------------------------------------------\n\n`;
+        if (curPage === "ALL") {
+            Object.keys(db[curCat]).forEach(pg => {
+                text += `>> Page: ${pg}\n`;
+                (db[curCat][pg] || []).forEach(it => { text += `   ${it.done ? "[x]" : "[ ]"} ${it.text} (Qty: ${it.qty})\n`; });
+                text += `\n`;
+            });
+        } else {
+            text += `>> Page: ${curPage}\n`;
+            (db[curCat][curPage] || []).forEach(it => { text += `   ${it.done ? "[x]" : "[ ]"} ${it.text} (Qty: ${it.qty})\n`; });
+        }
+        const blob = new Blob([text], { type: "text/plain" }); const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `TaskList_${curCat}_${curPage}.txt`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    /* FIREBASE CLOUD SYNC & AUTH LOGIC WITH USER CONFIG */
+    const DEFAULT_FB_CONFIG = {
+        apiKey: "AIzaSyDJt_xJEwsj9jIXOiykRD21NqvejKQm2mU",
+        authDomain: "abdul-1st-project.firebaseapp.com",
+        databaseURL: "https://abdul-1st-project.firebaseio.com",
+        projectId: "abdul-1st-project",
+        storageBucket: "abdul-1st-project.firebasestorage.app",
+        messagingSenderId: "504623232901",
+        appId: "1:504623232901:web:6df2f1a54bb8c61ce4b6ec"
+    };
+
+    function getFBConfig() {
+        let key = document.getElementById('fbApiKey');
+        let dom = document.getElementById('fbAuthDom');
+        let pro = document.getElementById('fbProjId');
+        let app = document.getElementById('fbAppId');
+        return {
+            apiKey: (key ? key.value : "") || localStorage.getItem('fb_apiKey') || DEFAULT_FB_CONFIG.apiKey,
+            authDomain: (dom ? dom.value : "") || localStorage.getItem('fb_authDom') || DEFAULT_FB_CONFIG.authDomain,
+            projectId: (pro ? pro.value : "") || localStorage.getItem('fb_projId') || DEFAULT_FB_CONFIG.projectId,
+            appId: (app ? app.value : "") || localStorage.getItem('fb_appId') || DEFAULT_FB_CONFIG.appId
+        };
+    }
+
+    function saveFBConfig(conf) {
+        localStorage.setItem('fb_apiKey', conf.apiKey || ''); localStorage.setItem('fb_authDom', conf.authDomain || '');
+        localStorage.setItem('fb_projId', conf.projectId || ''); localStorage.setItem('fb_appId', conf.appId || '');
+        let syncK = document.getElementById('fbSyncKey');
+        if(syncK) localStorage.setItem('fb_syncKey', syncK.value || '');
+    }
+
+    function initFirebase() {
+        if (typeof firebase === 'undefined') {
+            console.warn("Firebase is Offline or Blocked.");
+            return false;
+        }
+        const conf = getFBConfig();
+        if(!conf.apiKey || !conf.projectId) { console.warn("Firebase Config missing"); return false; }
         
-        function saveUser() { 
-            const old = document.getElementById('oldCode').value; const nc = document.getElementById('custCode').value.trim(); const sk = document.getElementById('custSync').value.trim(); const n = document.getElementById('custName').value.trim(); const t = document.getElementById('custTitle').value.trim(); const templateId = document.getElementById('userTemplate').value;
-            if(!nc || !sk) { magicAlert("Code and Sync Key are required.", "warn"); return; } 
-            if(old && old !== nc) db.ref('admin/codes/' + old).remove(); 
-            db.ref('admin/codes/' + nc).update({ status: 'active', syncKey: sk, customerName: n, appTitle: t }).then(() => { 
-                if (templateId && globalTemplatesCache[templateId]) {
-                    const targetCode = globalTemplatesCache[templateId].html; // Used .html correctly from updated cache
-                    db.ref('userData/' + sk).set(targetCode).then(() => { if (currentSyncKey === sk) { document.getElementById('codeEditor').value = targetCode; } });
+        if(!fbApp) {
+            try { 
+                fbApp = firebase.initializeApp(conf); 
+                fbDB = firebase.firestore(); 
+                fbAuth = firebase.auth();
+                
+                fbAuth.onAuthStateChanged(user => {
+                    let authIcon = document.getElementById('authBtn');
+                    if(user) {
+                        let ac = document.getElementById('authContent'); if(ac) ac.style.display = 'none';
+                        let lc = document.getElementById('loggedInContent'); if(lc) lc.style.display = 'block';
+                        let ue = document.getElementById('userEmailDisplay'); if(ue) ue.innerText = user.email;
+                        if(authIcon) authIcon.classList.add('auth-active');
+                    } else {
+                        let ac = document.getElementById('authContent'); if(ac) ac.style.display = 'block';
+                        let lc = document.getElementById('loggedInContent'); if(lc) lc.style.display = 'none';
+                        if(authIcon) authIcon.classList.remove('auth-active');
+                    }
+                });
+            } 
+            catch(e) { console.error("Firebase Init Error:", e); return false; }
+        }
+        return true;
+    }
+
+    // HELPER TO CHECK LOGIN
+    function isUserLoggedIn() {
+        return fbAuth && fbAuth.currentUser;
+    }
+
+    /* AUTHENTICATION FUNCTIONS */
+    function openAuthModal() {
+        if(!initFirebase()) return alert("Please check internet connection or Firebase settings.");
+        let am = document.getElementById('authModal'); if(am) am.style.display = 'flex';
+        let as = document.getElementById('authStatus'); if(as) as.innerText = '';
+    }
+
+    async function handleLogin() {
+        let eInput = document.getElementById('authEmail'); let e = eInput ? eInput.value : "";
+        let pInput = document.getElementById('authPassword'); let p = pInput ? pInput.value : "";
+        let s = document.getElementById('authStatus');
+        if(!e || !p) { if(s) s.innerText = "Please enter email and password"; return; }
+        if(s) { s.innerText = "Logging in... ⏳"; s.style.color = "var(--text-sub)"; }
+        
+        try {
+            await fbAuth.signInWithEmailAndPassword(e, p);
+            if(s) { s.style.color = "var(--success)"; s.innerText = "Login Successful!"; }
+            setTimeout(() => { let am = document.getElementById('authModal'); if(am) am.style.display = 'none'; }, 1000);
+        } catch(err) { 
+            if(s) { s.style.color = "var(--danger)"; s.innerText = err.message; }
+        }
+    }
+
+    async function handleSignUp() {
+        let eInput = document.getElementById('authEmail'); let e = eInput ? eInput.value : "";
+        let pInput = document.getElementById('authPassword'); let p = pInput ? pInput.value : "";
+        let s = document.getElementById('authStatus');
+        if(!e || !p) { if(s) s.innerText = "Please enter email and password"; return; }
+        if(s) { s.innerText = "Creating account... ⏳"; s.style.color = "var(--text-sub)"; }
+        
+        try {
+            await fbAuth.createUserWithEmailAndPassword(e, p);
+            if(s) { s.style.color = "var(--success)"; s.innerText = "Account Created & Logged In!"; }
+            setTimeout(() => { let am = document.getElementById('authModal'); if(am) am.style.display = 'none'; }, 1000);
+        } catch(err) { 
+            if(s) { s.style.color = "var(--danger)"; s.innerText = err.message; }
+        }
+    }
+
+    async function handleLogout() {
+        try { if(fbAuth) await fbAuth.signOut(); } 
+        catch(err) { alert(err.message); }
+    }
+
+
+    function toggleFBConfig() {
+        const box = document.getElementById('firebaseConfigInputs'); const arrow = document.getElementById('cfgArrow');
+        if(!box || !arrow) return;
+        const isHidden = box.style.display === 'none'; box.style.display = isHidden ? 'flex' : 'none'; arrow.innerText = isHidden ? '▲' : '▼';
+    }
+
+    async function syncToCloud() {
+        if(!initFirebase()) return alert("Check Firebase or Internet connection.");
+        if(!isUserLoggedIn()) return alert("🔒 Please Login to your Cloud Account first (Click the 👤 icon).");
+
+        const keyInput = document.getElementById('fbSyncKey');
+        const key = keyInput ? keyInput.value.trim() : "";
+        if(!key) return alert("Enter a Secret Sync Key in Advanced Settings");
+        
+        const status = document.getElementById('syncStatus'); if(status) status.innerText = "Pushing to cloud...";
+        try {
+            await fbDB.collection("user_data").doc(key).set({ db: db, lastUpdated: Date.now(), owner: fbAuth.currentUser.email });
+            saveFBConfig(getFBConfig()); if(status) status.innerText = "✅ Successfully saved to Cloud!";
+        } catch(e) { console.error("Firebase Push Error:", e); if(status) status.innerText = "❌ Push Failed (Check Permissions)"; alert("Firebase Error: " + e.message); }
+    }
+
+    async function syncFromCloud() {
+        if(!initFirebase()) return alert("Check Firebase or Internet connection.");
+        if(!isUserLoggedIn()) return alert("🔒 Please Login to your Cloud Account first (Click the 👤 icon).");
+
+        const keyInput = document.getElementById('fbSyncKey');
+        const key = keyInput ? keyInput.value.trim() : "";
+        if(!key) return alert("Enter a Secret Sync Key in Advanced Settings");
+        
+        const status = document.getElementById('syncStatus'); if(status) status.innerText = "Pulling from cloud...";
+        try {
+            const doc = await fbDB.collection("user_data").doc(key).get();
+            if(doc.exists) {
+                const cloudData = doc.data().db;
+                Object.keys(cloudData).forEach(cat => {
+                    if(!db[cat]) db[cat] = {};
+                    Object.keys(cloudData[cat]).forEach(pg => {
+                        if(!db[cat][pg]) db[cat][pg] = [];
+                        (cloudData[cat][pg] || []).forEach(cloudIt => {
+                            let localIt = db[cat][pg].find(it => it.text === cloudIt.text);
+                            if(localIt) { localIt.qty = (parseInt(localIt.qty) + parseInt(cloudIt.qty)).toString(); if(!cloudIt.done) localIt.done = false; } 
+                            else { db[cat][pg].push(cloudIt); }
+                        });
+                    });
+                });
+                save(); init(); saveFBConfig(getFBConfig()); if(status) status.innerText = "✅ Cloud data merged successfully!";
+            } else if(status) status.innerText = "❌ No data found for this Sync Key.";
+        } catch(e) { console.error("Firebase Pull Error:", e); if(status) status.innerText = "❌ Pull Failed (Check Permissions)"; }
+    }
+
+    /* VIEW ALL SYNC KEYS & DATA FUNCTION */
+    async function viewAllSyncKeys() {
+        if(!initFirebase()) return alert("Check Firebase or Internet connection.");
+        if(!isUserLoggedIn()) return alert("🔒 Please Login to your Cloud Account first (Click the 👤 icon).");
+
+        const listDiv = document.getElementById('syncKeysList');
+        if(listDiv) listDiv.innerHTML = "Fetching keys from cloud... ⏳";
+        try {
+            const snapshot = await fbDB.collection("user_data").get();
+            if(snapshot.empty) {
+                if(listDiv) listDiv.innerHTML = "No Sync Keys found.";
+                return;
+            }
+            
+            let html = `<strong style="color:var(--text-main); font-size:14px;">Total Keys in Use: ${snapshot.size}</strong><br><br>
+                        <div style="text-align:left; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0; max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">`;
+            
+            snapshot.forEach(doc => {
+                html += `<div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:8px 12px; border-radius:8px; border:1px solid #e2e8f0;">
+                            <span style="font-size:13px; font-weight:700;">🔑 ${esc(doc.id)}</span>
+                            <button class="sc-btn" style="padding:6px 12px; font-size:11px; flex:none; width:auto; border-radius:8px;" onclick="viewSyncKeyData('${esc(doc.id)}')">👁️ View Data</button>
+                         </div>`;
+            });
+            html += `</div>`;
+            
+            if(listDiv) listDiv.innerHTML = html;
+        } catch(e) {
+            console.error("Error fetching keys:", e);
+            if(listDiv) listDiv.innerHTML = "❌ Failed to fetch keys. (Check Permissions)";
+        }
+    }
+
+    async function viewSyncKeyData(key) {
+        if(!isUserLoggedIn()) return;
+        const modal = document.getElementById('syncDataModal');
+        const content = document.getElementById('syncDataContent');
+        const title = document.getElementById('syncDataTitle');
+        if(!modal || !content || !title) return;
+        
+        title.innerText = `Data for Key: ${key}`;
+        content.innerHTML = "<div style='text-align:center; padding:20px;'>Loading data... ⏳</div>";
+        modal.style.display = 'flex';
+        
+        try {
+            const doc = await fbDB.collection("user_data").doc(key).get();
+            if(doc.exists) {
+                const cloudData = doc.data().db;
+                let html = "";
+                
+                Object.keys(cloudData).forEach(cat => {
+                    html += `<div style="margin-bottom: 15px;">
+                                <h3 style="margin-bottom:8px; color:var(--primary); border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-top:0;">📁 ${esc(cat)}</h3>`;
+                    
+                    Object.keys(cloudData[cat]).forEach(pg => {
+                        html += `<div style="margin-bottom:10px; padding-left:12px; border-left:3px solid #cbd5e1;">
+                                    <strong style="font-size:13px; color:var(--text-sub); display:block; margin-bottom:5px;">📄 ${esc(pg)}</strong>`;
+                        
+                        const items = cloudData[cat][pg] || [];
+                        if(items.length === 0) {
+                            html += `<span style="font-size:11px; color:#94a3b8; font-style:italic;">No items</span><br>`;
+                        } else {
+                            items.forEach(it => {
+                                html += `<div style="font-size:13px; padding:3px 0; display:flex; justify-content:space-between;">
+                                            <span>${it.done ? '✅' : '⏳'} ${esc(it.text)}</span>
+                                            <span style="font-weight:700; color:var(--text-main); background:#f1f5f9; padding:2px 6px; border-radius:6px; font-size:11px;">Qty: ${it.qty}</span>
+                                         </div>`;
+                            });
+                        }
+                        html += `</div>`;
+                    });
+                    html += `</div>`;
+                });
+                
+                if(html === "") html = "<div style='text-align:center;'>No data found in this key.</div>";
+                content.innerHTML = html;
+            } else {
+                content.innerHTML = "<div style='color:var(--danger); text-align:center;'>❌ Key data not found.</div>";
+            }
+        } catch(e) {
+            console.error("Error loading key data:", e);
+            content.innerHTML = "<div style='color:var(--danger); text-align:center;'>❌ Failed to load data.</div>";
+        }
+    }
+
+    /* CHAT SYSTEM IMPLEMENTATION */
+    function toggleChat() {
+        const cw = document.getElementById('chatWidget');
+        if(!cw) return;
+        
+        if (cw.style.display === 'none' || cw.style.display === '') {
+            if(!initFirebase() || !isUserLoggedIn()) {
+                alert("🔒 Please Login to your Cloud Account first to use Team Chat (Click the 👤 icon).");
+                return;
+            }
+            let ud = document.getElementById('userNameDisplay'); if(ud) ud.innerText = chatUserName;
+            cw.style.display = 'flex'; startChatListener();
+        } else { cw.style.display = 'none'; }
+    }
+
+    function startChatListener() {
+        if (!initFirebase()) {
+            let msgBox = document.getElementById('chatMessages');
+            if(msgBox) msgBox.innerHTML = '<div style="color:red; text-align:center; font-size:12px;">Failed to connect to Firebase. Check settings.</div>';
+            return;
+        }
+        if (!chatUnsubscribe && fbDB) {
+            const msgBox = document.getElementById('chatMessages');
+            if(msgBox) msgBox.innerHTML = '<div style="color:var(--text-sub); text-align:center; font-size:12px;">Loading messages...</div>';
+            
+            chatUnsubscribe = fbDB.collection('global_chat').orderBy('timestamp', 'asc').limit(50)
+                .onSnapshot(snapshot => {
+                    if(msgBox) {
+                        msgBox.innerHTML = '';
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            const isSelf = data.user === chatUserName;
+                            msgBox.innerHTML += `
+                                <div class="chat-msg ${isSelf ? 'self' : 'other'}">
+                                    <div class="chat-msg-user">${esc(data.user)}</div>
+                                    <div>${esc(data.text)}</div>
+                                </div>
+                            `;
+                        });
+                        msgBox.scrollTop = msgBox.scrollHeight; 
+                    }
+                }, err => { console.error("Chat sync error:", err); });
+        }
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        if(!input) return;
+        const text = input.value.trim();
+        if (text && initFirebase() && isUserLoggedIn()) {
+            fbDB.collection('global_chat').add({
+                text: text, user: chatUserName, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(e => alert("Failed to send message: " + e.message));
+            input.value = '';
+        }
+    }
+
+    async function deleteChatHistory() {
+        if(!isUserLoggedIn()) return alert("Please Login First.");
+        if (!confirm("Are you sure you want to delete your messages from the chat?")) return;
+        if (!initFirebase()) return alert("Check Firebase connection settings.");
+        
+        try {
+            const snapshot = await fbDB.collection('global_chat').where('user', '==', chatUserName).get();
+            if (snapshot.empty) {
+                return alert("No messages found from you to delete.");
+            }
+            
+            const batch = fbDB.batch();
+            snapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+            await batch.commit();
+            alert("Your messages were deleted successfully.");
+        } catch (e) {
+            console.error("Error deleting chat:", e);
+            alert("Failed to delete chat history: " + e.message);
+        }
+    }
+
+    function changeChatUserName() {
+        let oldName = chatUserName;
+        let newName = prompt("Enter your new chat name:", chatUserName);
+        if (newName && newName.trim() !== "" && newName !== oldName) {
+            chatUserName = newName.trim();
+            localStorage.setItem('chat_username', chatUserName);
+            let unameDisplay = document.getElementById('userNameDisplay');
+            if(unameDisplay) unameDisplay.innerText = chatUserName;
+            
+            if (initFirebase() && isUserLoggedIn()) {
+                fbDB.collection('global_chat').where('user', '==', oldName).get()
+                .then(snapshot => {
+                    let batch = fbDB.batch();
+                    snapshot.forEach(doc => {
+                        batch.update(doc.ref, { user: chatUserName });
+                    });
+                    return batch.commit();
+                }).catch(e => console.error("Error updating old messages:", e));
+            }
+
+            if (chatUnsubscribe) {
+                chatUnsubscribe();
+                chatUnsubscribe = null;
+                startChatListener();
+            }
+        }
+    }
+
+    /* OTA UPDATE FEATURES */
+    function showPasteHtmlModal() {
+        let sModal = document.getElementById('settingsModal');
+        let hModal = document.getElementById('htmlUpdateModal');
+        if(sModal) sModal.style.display = 'none'; 
+        if(hModal) hModal.style.display = 'flex'; 
+    }
+
+    function applyHtmlUpdate() {
+        const input = document.getElementById('rawHtmlInput');
+        const htmlData = input ? input.value.trim() : "";
+        if(!htmlData) return alert("Please paste HTML code first.");
+        
+        const blob = new Blob([htmlData], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; 
+        a.download = `TaskApp_Updated_${new Date().toISOString().split('T')[0]}.html`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); 
+        URL.revokeObjectURL(url);
+        
+        let hModal = document.getElementById('htmlUpdateModal');
+        if(hModal) hModal.style.display = 'none';
+        if(input) input.value = '';
+        alert("The updated app file has been downloaded. Open it to use the new version.");
+    }
+
+    async function pushPastedHtml() {
+        if(!isUserLoggedIn()) return alert("🔒 Please Login to your Cloud Account first (Click the 👤 icon).");
+        
+        const input = document.getElementById('rawHtmlInput');
+        const htmlData = input ? input.value.trim() : "";
+        if(!htmlData) return alert("Please paste HTML code first.");
+        if(!initFirebase()) return alert("Check Firebase or Internet connection.");
+        
+        const syncK = document.getElementById('fbSyncKey');
+        const key = syncK ? syncK.value.trim() : "";
+        if(!key) return alert("Enter a Secret Sync Key in Advanced Settings");
+        
+        const status = document.getElementById('otaStatus');
+        let hModal = document.getElementById('htmlUpdateModal');
+        let sModal = document.getElementById('settingsModal');
+        
+        if(hModal) hModal.style.display = 'none';
+        if(input) input.value = '';
+        if(sModal) sModal.style.display = 'flex';
+        
+        if(status) status.innerText = "Pushing Code to Cloud...";
+        
+        try {
+            await fbDB.collection("app_updates").doc(key).set({ html: htmlData, lastUpdated: Date.now() });
+            if(status) status.innerText = "✅ HTML Code Pushed!";
+        } catch(err) {
+            console.error("OTA Push Error:", err);
+            if(status) status.innerText = "❌ Push Failed";
+        }
+    }
+
+    async function pushAppUpdate() {
+        if(!isUserLoggedIn()) return alert("🔒 Please Login to your Cloud Account first (Click the 👤 icon).");
+        if(!initFirebase()) return alert("Check Firebase connection settings.");
+        
+        const syncK = document.getElementById('fbSyncKey');
+        const key = syncK ? syncK.value.trim() : "";
+        if(!key) return alert("Enter a Secret Sync Key in Advanced Settings");
+
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.html';
+        input.onchange = e => {
+            let file = e.target.files[0];
+            if(!file) return;
+            let reader = new FileReader();
+            reader.onload = async ev => {
+                const htmlContent = ev.target.result;
+                const status = document.getElementById('otaStatus');
+                if(status) status.innerText = "Pushing App Update...";
+                try {
+                    await fbDB.collection("app_updates").doc(key).set({ html: htmlContent, lastUpdated: Date.now() });
+                    if(status) status.innerText = "✅ App Update Pushed!";
+                } catch(err) {
+                    console.error("OTA Push Error:", err);
+                    if(status) status.innerText = "❌ Push Failed";
                 }
-                hideUserModal(); magicAlert("Saved Successfully", "success"); 
-            }).catch(err => magicAlert(err.message, "danger")); 
-        }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
 
-        function loadHTML(sk) { currentSyncKey = sk; document.getElementById('editingDisplay').innerText = sk; db.ref('userData/' + sk).once('value').then(s => { document.getElementById('codeEditor').value = s.val() || ""; }); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    async function pullAppUpdate() {
+        if(!initFirebase()) return alert("Check Firebase connection settings.");
         
-        function updateContent() { if(!currentSyncKey) return; let rawContent = document.getElementById('codeEditor').value; let parser = new DOMParser(); let doc = parser.parseFromString(rawContent, 'text/html'); let titleTag = doc.querySelector('title'); if (titleTag) titleTag.remove(); let headContent = doc.head.innerHTML; let bodyContent = doc.body.innerHTML; let finalOutput = headContent + bodyContent; db.ref('userData/' + currentSyncKey).set(finalOutput).then(() => magicAlert("Smart Push Successful!", "success")); }
-        
-        function remoteClear(sk, type) { if (type === 'session') { magicConfirm("Only deactivate the activation session?", false, () => { db.ref('admin/commands/' + sk).set({ action: 'clear', status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP }); magicAlert("Session Clear command triggered!", "warn"); }); } else if (type === 'all') { magicConfirm("Force full application reset?", true, () => { db.ref('admin/commands/' + sk).set({ action: 'clear_all', status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP }); magicAlert("Full Reset Wipe command triggered!", "danger"); }); } }
-        function stopClear(sk) { magicConfirm("Stop and Cancel the Clear Command?", false, () => { db.ref('admin/commands/' + sk).remove(); magicAlert("Command cancelled successfully.", "success"); }); }
-        function delUser(c, sk) { magicConfirm("Are you absolutely sure you want to delete this user?", true, () => { db.ref('admin/codes/' + c).remove(); db.ref('userData/' + sk).remove(); db.ref('admin/commands/' + sk).remove(); magicAlert("User account deleted completely.", "success"); }); }
-    </script>
+        const syncK = document.getElementById('fbSyncKey');
+        const key = syncK ? syncK.value.trim() : "";
+        if(!key) return alert("Enter a Secret Sync Key in Advanced Settings");
+        const status = document.getElementById('otaStatus'); 
+        if(status) status.innerText = "Pulling App Update...";
+        try {
+            const doc = await fbDB.collection("app_updates").doc(key).get();
+            if(doc.exists) {
+                const htmlData = doc.data().html;
+                const blob = new Blob([htmlData], { type: "text/html" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; 
+                a.download = `TaskApp_OTA_${new Date().toISOString().split('T')[0]}.html`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a); 
+                URL.revokeObjectURL(url);
+                if(status) status.innerText = "✅ Update Downloaded!";
+                alert("The updated app file has been downloaded. Please open the new file to use the latest version.");
+            } else {
+                if(status) status.innerText = "❌ No update found.";
+            }
+        } catch(e) { 
+            console.error("OTA Pull Error:", e); 
+            if(status) status.innerText = "❌ Pull Failed"; 
+        }
+    }
+
+    // Load saved config on startup safely
+    window.addEventListener('load', () => {
+        try {
+            let k = document.getElementById('fbApiKey'); if(k) k.value = localStorage.getItem('fb_apiKey') || DEFAULT_FB_CONFIG.apiKey;
+            let p = document.getElementById('fbProjId'); if(p) p.value = localStorage.getItem('fb_projId') || DEFAULT_FB_CONFIG.projectId;
+            let a = document.getElementById('fbAuthDom'); if(a) a.value = localStorage.getItem('fb_authDom') || DEFAULT_FB_CONFIG.authDomain;
+            let i = document.getElementById('fbAppId'); if(i) i.value = localStorage.getItem('fb_appId') || DEFAULT_FB_CONFIG.appId;
+            let s = document.getElementById('fbSyncKey'); if(s) s.value = localStorage.getItem('fb_syncKey') || '';
+            
+            // Auto initialize to check auth state on load (Safe Call)
+            initFirebase();
+        } catch(e) { console.error("Config Load Error", e); }
+    });
+
+    init();
+
+</script>
+
 </body>
 </html>
