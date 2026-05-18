@@ -9,6 +9,10 @@ on:
       html_url:
         required: true
 
+# 🔑 GLOBAL PERMISSION OVERRIDE: Grants write access to the automation runner permanently
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,32 +30,22 @@ jobs:
       with:
         gradle-version: 8.1.1
 
-    # 🛡️ GLOBAL SANITIZATION LAYER: Pre-flight filter to fix ALL input errors proactively
     - name: Global Pre-flight Input Sanitization & Keyword Repair
       id: sanitizer
       run: |
         RAW_PKG="${{ github.event.inputs.package_name }}"
-        
-        # 1. Clean uppercase letters and illegal characters instantly
         CLEAN_PKG=$(echo "$RAW_PKG" | tr '[:upper:]' '[:lower:]' | tr '-' '_' | tr ' ' '_')
-        
-        # 2. Advanced Java Reserved Keywords Filter Array
         KEYWORDS="abstract assert boolean break byte case catch char class const continue default do double else enum extends final finally float for goto if implements import instanceof int interface long native new package private protected public return short static strictfp super switch synchronized this throw throws transient try void volatile while"
-        
         for word in $KEYWORDS; do
-          # Proactively transforms 'com.try.checking' to 'com.try_app.checking' globally
           CLEAN_PKG=$(echo "$CLEAN_PKG" | sed -E "s/(^|\.)$word(\.|$)/\1${word}_app\2/g")
         done
-        
         echo "LEGALLY_SANITIZED_PACKAGE=$CLEAN_PKG" >> $GITHUB_OUTPUT
-        echo "⚙️ Global Sanitizer Log: [$RAW_PKG] successfully re-engineered to [$CLEAN_PKG]"
 
     - name: Construct Baseline Android Framework
       run: |
         mkdir -p app/src/main/res/values
         mkdir -p app/src/main/res/mipmap-hdpi
         mkdir -p app/src/main/res/drawable
-        
         echo "include ':app'" > settings.gradle
         
         cat << 'EOF' > build.gradle
@@ -64,7 +58,6 @@ jobs:
         }
         EOF
 
-        # Dynamically injecting the 100% legal sanitized package name into Gradle build scripts
         cat << 'EOF' > app/build.gradle
         plugins { id 'com.android.application' }
         android {
@@ -101,7 +94,7 @@ jobs:
         </manifest>
         EOF
 
-    - name: Inject Dynamic Java Engine Source (With Structural Namespace Integration)
+    - name: Inject Dynamic Java Engine Source
       run: |
         PKG_PATH=$(echo "${{ steps.sanitizer.outputs.LEGALLY_SANITIZED_PACKAGE }}" | tr '.' '/')
         mkdir -p "app/src/main/java/$PKG_PATH"
@@ -245,16 +238,10 @@ jobs:
         }
         EOF
 
-    # 🖼️ PROACTIVE FALLBACK INJECTION: If user misses icon/splash, inject a premium cloud fallback vector instantly
-    - name: Proactive Asset Validation & Fallback Allocation Matrix
+    - name: Verify Splash Asset Fallback
       run: |
         if [ ! -f app/src/main/res/drawable/presplash.png ]; then
-          echo "ℹ️ Splash screen missing. Allocating premium background slate geometry..."
           curl -sL "https://raw.githubusercontent.com/actions/artwork/main/github-logo/github-logo-512.png" -o app/src/main/res/drawable/presplash.png
-        fi
-        if [ ! -f app/src/main/res/mipmap-hdpi/ic_launcher.png ]; then
-          echo "ℹ️ Launcher Icon missing. Allocating core launcher geometry blueprint..."
-          cp app/src/main/res/drawable/presplash.png app/src/main/res/mipmap-hdpi/ic_launcher.png
         fi
 
     - name: Compile Core Android Application
