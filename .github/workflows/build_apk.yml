@@ -14,26 +14,234 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
+        # یہاں سے کیشے ہٹا دیا گیا ہے تا کہ خالی ریپو پر کریش نہ ہو
+
+    - name: Construct Baseline Android Framework
+      run: |
+        mkdir -p app/src/main/res/values
+        mkdir -p app/src/main/res/mipmap-hdpi
+        mkdir -p app/src/main/res/drawable
         
-    - name: Grant execute permission for Gradle
-      run: chmod +x gradlew || true
-      
-    - name: Compile Signed Production APK
-      run: ./gradlew assembleDebug || gradle assembleDebug
-      
-    - name: Re-engineer APK Package Name
+        # Creating settings.gradle
+        echo "include ':app'" > settings.gradle
+        
+        # Creating root build.gradle
+        cat << 'EOF' > build.gradle
+        buildscript {
+            repositories { google(); mavenCentral() }
+            dependencies { classpath 'com.android.tools.build:gradle:8.1.1' }
+        }
+        allprojects {
+            repositories { google(); mavenCentral() }
+        }
+        EOF
+
+        # Creating app/build.gradle dynamically using package name input
+        cat << 'EOF' > app/build.gradle
+        plugins { id 'com.android.application' }
+        android {
+            namespace "${{ github.event.inputs.package_name }}"
+            compileSdk 34
+            defaultConfig {
+                applicationId "${{ github.event.inputs.package_name }}"
+                minSdk 21
+                targetSdk 34
+                versionCode 1
+                versionName "1.0"
+            }
+            buildTypes {
+                release {
+                    minifyEnabled false
+                    shrinkResources false
+                }
+                debug {
+                    signingConfig signingConfigs.debug
+                }
+            }
+        }
+        EOF
+
+        # Creating Manifest file with dynamic App Name
+        cat << 'EOF' > app/src/main/AndroidManifest.xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application android:allowBackup="true" android:label="${{ github.event.inputs.app_name }}" android:hardwareAccelerated="true" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                <activity android:name=".MainActivity" android:exported="true" android:configChanges="orientation|screenSize">
+                    <intent-filter>
+                        <action android:name="android.intent.action.MAIN" />
+                        <category android:name="android.intent.category.LAUNCHER" />
+                    </intent-filter>
+                </activity>
+            </application>
+        </manifest>
+        EOF
+
+    - name: Inject Dynamic Java Engine Source (WhatsApp Fix Embedded)
+      run: |
+        PKG_PATH=$(echo "${{ github.event.inputs.package_name }}" | tr '.' '/')
+        mkdir -p "app/src/main/java/$PKG_PATH"
+        
+        cat << 'EOF' > app/src/main/java/$PKG_PATH/MainActivity.java
+        package ${{ github.event.inputs.package_name }};
+        import android.app.Activity;
+        import android.os.Bundle;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.webkit.WebSettings;
+        import android.webkit.WebView;
+        import android.webkit.WebViewClient;
+        import android.widget.FrameLayout;
+        import android.widget.ImageView;
+        import android.graphics.Color;
+        import android.content.Intent;
+        import android.net.Uri;
+
+        public class MainActivity extends Activity {
+            private WebView webView;
+
+            @Override
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+
+                FrameLayout rootLayout = new FrameLayout(this);
+                rootLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                rootLayout.setBackgroundColor(Color.parseColor("#090d16"));
+
+                webView = new WebView(this);
+                webView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                webView.setBackgroundColor(Color.parseColor("#090d16"));
+                
+                WebSettings ws = webView.getSettings();
+                ws.setJavaScriptEnabled(true); ws.setDomStorageEnabled(true); ws.setDatabaseEnabled(true); ws.setAllowFileAccess(true); ws.setAllowContentAccess(true);
+
+                webView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, final String url) {
+                        if (url != null && (url.contains("whatsapp.com") || url.startsWith("whatsapp://"))) {
+                            String rawUrl = url.trim().replace(" ", "%20");
+                            if (rawUrl.startsWith("whatsapp://send")) {
+                                rawUrl = rawUrl.replace("whatsapp://send", "https://api.whatsapp.com/send");
+                            }
+                            final String finalizedUrl = rawUrl;
+
+                            final android.app.Dialog customDialog = new android.app.Dialog(MainActivity.this);
+                            customDialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
+
+                            android.widget.LinearLayout dialogLayout = new android.widget.LinearLayout(MainActivity.this);
+                            dialogLayout.setOrientation(android.widget.LinearLayout.VERTICAL);
+                            dialogLayout.setPadding(60, 55, 60, 55);
+
+                            android.graphics.drawable.GradientDrawable dialogBg = new android.graphics.drawable.GradientDrawable();
+                            dialogBg.setColor(Color.parseColor("#0f172a"));
+                            dialogBg.setCornerRadius(45f);
+                            dialogLayout.setBackground(dialogBg);
+
+                            android.widget.TextView titleTv = new android.widget.TextView(MainActivity.this);
+                            titleTv.setText("Select WhatsApp Support Mode");
+                            titleTv.setTextColor(Color.WHITE);
+                            titleTv.setTextSize(18);
+                            titleTv.setGravity(android.view.Gravity.CENTER);
+                            titleTv.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+                            titleTv.setPadding(0, 10, 0, 45);
+                            dialogLayout.addView(titleTv);
+
+                            android.widget.LinearLayout.LayoutParams btnParams = new android.widget.LinearLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            btnParams.setMargins(0, 15, 0, 15);
+
+                            android.widget.Button btnRegular = new android.widget.Button(MainActivity.this);
+                            btnRegular.setText("💬 WhatsApp Messenger");
+                            btnRegular.setTextColor(Color.WHITE);
+                            btnRegular.setTextSize(15);
+                            btnRegular.setAllCaps(false);
+                            
+                            android.graphics.drawable.GradientDrawable regularShape = new android.graphics.drawable.GradientDrawable();
+                            regularShape.setColor(Color.parseColor("#16a34a"));
+                            regularShape.setCornerRadius(25f);
+                            btnRegular.setBackground(regularShape);
+                            
+                            btnRegular.setOnClickListener(new android.view.View.OnClickListener() {
+                                @Override
+                                public void onClick(android.view.View v) {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(finalizedUrl));
+                                    intent.setPackage("com.whatsapp");
+                                    try { startActivity(intent); } catch(Exception e) {}
+                                    customDialog.dismiss();
+                                }
+                            });
+                            dialogLayout.addView(btnRegular, btnParams);
+
+                            android.widget.Button btnBusiness = new android.widget.Button(MainActivity.this);
+                            btnBusiness.setText("💼 WhatsApp Business");
+                            btnBusiness.setTextColor(Color.WHITE);
+                            btnBusiness.setTextSize(15);
+                            btnBusiness.setAllCaps(false);
+                            
+                            android.graphics.drawable.GradientDrawable businessShape = new android.graphics.drawable.GradientDrawable();
+                            businessShape.setColor(Color.parseColor("#2563eb"));
+                            businessShape.setCornerRadius(25f);
+                            btnBusiness.setBackground(businessShape);
+
+                            btnBusiness.setOnClickListener(new android.view.View.OnClickListener() {
+                                @Override
+                                public void onClick(android.view.View v) {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(finalizedUrl));
+                                    intent.setPackage("com.whatsapp.w4b");
+                                    try { startActivity(intent); } catch(Exception e) {}
+                                    customDialog.dismiss();
+                                }
+                            });
+                            dialogLayout.addView(btnBusiness, btnParams);
+
+                            customDialog.setContentView(dialogLayout);
+                            if (customDialog.getWindow() != null) {
+                                customDialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
+                            }
+                            customDialog.show();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+                rootLayout.addView(webView);
+                webView.loadUrl("file:///android_asset/index.html");
+                setContentView(rootLayout);
+            }
+
+            @Override
+            public void onBackPressed() {
+                if (webView != null && webView.canGoBack()) {
+                    webView.goBack();
+                } else {
+                    super.onBackPressed();
+                }
+            }
+        }
+        EOF
+
+    - name: Verify Splash Asset Fallback
+      run: |
+        if [ ! -f app/src/main/res/drawable/presplash.png ]; then
+          curl -sL "https://raw.githubusercontent.com/actions/artwork/main/github-logo/github-logo-512.png" -o app/src/main/res/drawable/presplash.png
+        fi
+
+    - name: Compile Core Android Application
+      run: gradle assembleDebug
+
+    - name: Relocate Compiled Asset Artifact
       run: |
         mkdir -p build_output
         cp app/build/outputs/apk/debug/app-debug.apk build_output/Compiled_App.apk
-        
-    - name: Publish Direct APK to GitHub Release
+
+    - name: Publish Direct APK to GitHub Release Tag
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -42,4 +250,4 @@ jobs:
         git tag -f latest
         git push -f origin latest
         gh release delete latest --yes || true
-        gh release create latest build_output/Compiled_App.apk --title "Master Production Release" --notes "Automated OTA update compiler stream initialized."
+        gh release create latest build_output/Compiled_App.apk --title "Master Production Release" --notes "Automated Cloud Compilation Loop Complete."
