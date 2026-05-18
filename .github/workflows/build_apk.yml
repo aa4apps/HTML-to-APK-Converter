@@ -20,7 +20,12 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        # یہاں سے کیشے ہٹا دیا گیا ہے تا کہ خالی ریپو پر کریش نہ ہو
+
+    # 🔒 VERSION LOCK ENGINE: Forces the cloud server to download the exact matching compiler
+    - name: Setup Explicit Gradle Version Engine
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.1.1
 
     - name: Construct Baseline Android Framework
       run: |
@@ -28,10 +33,8 @@ jobs:
         mkdir -p app/src/main/res/mipmap-hdpi
         mkdir -p app/src/main/res/drawable
         
-        # Creating settings.gradle
         echo "include ':app'" > settings.gradle
         
-        # Creating root build.gradle
         cat << 'EOF' > build.gradle
         buildscript {
             repositories { google(); mavenCentral() }
@@ -42,7 +45,6 @@ jobs:
         }
         EOF
 
-        # Creating app/build.gradle dynamically using package name input
         cat << 'EOF' > app/build.gradle
         plugins { id 'com.android.application' }
         android {
@@ -60,14 +62,10 @@ jobs:
                     minifyEnabled false
                     shrinkResources false
                 }
-                debug {
-                    signingConfig signingConfigs.debug
-                }
             }
         }
         EOF
 
-        # Creating Manifest file with dynamic App Name
         cat << 'EOF' > app/src/main/AndroidManifest.xml
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android">
