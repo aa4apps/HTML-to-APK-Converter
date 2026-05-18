@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin v22 - Smart HTML Push</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        :root { --primary: #6366f1; --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --accent: #10b981; --danger: #ef4444; --warning: #f59e0b; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: 1px solid #334155; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 14px; font-size: 14px; }
+        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-warn { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+        .btn-edit { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid var(--accent); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 850px; }
+        th { text-align: left; color: #94a3b8; font-size: 11px; padding: 12px; border-bottom: 1px solid #334155; text-transform: uppercase; }
+        td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #1e293b; }
+        .status-pill { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .used { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        #loginSection { max-width: 400px; margin: 100px auto; text-align: center; }
+        #adminDashboard { display: none; }
+    </style>
+</head>
+<body>
+    <div id="loginSection" class="card">
+        <h2>Admin Login</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button class="btn btn-primary" onclick="login()">Login</button>
+    </div>
+    <div id="adminDashboard" class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="color:var(--primary); margin:0; font-size: 22px;">Master Admin v22</h1>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
+            <div class="card">
+                <h2>User Settings</h2>
+                <input type="hidden" id="oldCode">
+                <input type="text" id="custCode" placeholder="Code">
+                <input type="text" id="custSync" placeholder="Sync Key">
+                <input type="text" id="custName" placeholder="Customer Name">
+                <input type="text" id="custTitle" placeholder="App Title">
+                <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+            </div>
+            <div class="card">
+                <h2>HTML Content: <span id="editingDisplay" style="color:#94a3b8;">None</span></h2>
+                <textarea id="codeEditor" rows="12" placeholder="Paste Full HTML code here..."></textarea>
+                <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">* CSS & Scripts will be preserved. Only title will be removed.</p>
+                <button class="btn btn-primary" style="background:var(--accent);" onclick="updateContent()">Smart Push Content</button>
+            </div>
+        </div>
+        <div class="card" style="overflow-x:auto;">
+            <table>
+                <thead><tr><th>Code</th><th>Name</th><th>App Title</th><th>Sync Key</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDJt_xJEwsj9jIXOiykRD21NqvejKQm2mU", databaseURL: "https://abdul-1st-project.firebaseio.com", projectId: "abdul-1st-project" };
+        firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
+        let currentSyncKey = "";
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        function login() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(err => alert(err.message)); }
+        function logout() { auth.signOut().then(() => location.reload()); }
+        auth.onAuthStateChanged(user => { if (user) { document.getElementById('adminDashboard').style.display = 'block'; document.getElementById('loginSection').style.display = 'none'; loadUsers(); } else { document.getElementById('loginSection').style.display = 'block'; } });
+        
+        function loadUsers() {
+            db.ref('admin/codes').on('value', snap => {
+                const tbody = document.getElementById('userTableBody'); tbody.innerHTML = "";
+                snap.forEach(child => {
+                    const code = child.key; const d = child.val();
+                    const sClass = d.status === 'active' ? 'active' : 'used';
+                    tbody.innerHTML += `<tr>
+                        <td><b>${code}</b></td><td>${d.customerName || '-'}</td><td>${d.appTitle || '-'}</td><td><code>${d.syncKey}</code></td>
+                        <td><span class="status-pill ${sClass}">${d.status}</span></td>
+                        <td>
+                            <button class="btn btn-edit" onclick="editMeta('${code}')">Edit</button>
+                            <button class="btn" style="background:rgba(99,102,241,0.1);color:#6366f1;" onclick="loadHTML('${d.syncKey}')">Load</button>
+                            ${d.status === 'used' ? `<button class="btn btn-warn" onclick="reactivate('${code}')">Active</button>` : ''}
+                            <button class="btn btn-danger" onclick="remoteClear('${d.syncKey}')">Clear App</button>
+                            <button class="btn btn-danger" style="padding:4px;" onclick="delUser('${code}','${d.syncKey}')">X</button>
+                        </td></tr>`;
+                });
+            });
+        }
+        function editMeta(c) { db.ref('admin/codes/' + c).once('value').then(s => { const d = s.val(); document.getElementById('oldCode').value = c; document.getElementById('custCode').value = c; document.getElementById('custSync').value = d.syncKey; document.getElementById('custName').value = d.customerName; document.getElementById('custTitle').value = d.appTitle; }); }
+        function saveUser() { const old = document.getElementById('oldCode').value; const nc = document.getElementById('custCode').value; const sk = document.getElementById('custSync').value; const n = document.getElementById('custName').value; const t = document.getElementById('custTitle').value; if(old && old !== nc) db.ref('admin/codes/' + old).remove(); db.ref('admin/codes/' + nc).update({ status: 'active', syncKey: sk, customerName: n, appTitle: t }).then(() => { alert("Saved"); location.reload(); }); }
+        
+        function loadHTML(sk) { currentSyncKey = sk; document.getElementById('editingDisplay').innerText = sk; db.ref('userData/' + sk).once('value').then(s => { document.getElementById('codeEditor').value = s.val() || ""; }); }
+        
+        function updateContent() {
+            if(!currentSyncKey) return;
+            let rawContent = document.getElementById('codeEditor').value;
+            
+            // SMART CLEANING LOGIC
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(rawContent, 'text/html');
+            
+            // 1. REMOVE ONLY THE TITLE TAG
+            let titleTag = doc.querySelector('title');
+            if (titleTag) titleTag.remove();
+            
+            // 2. KEEP HEAD CONTENT (CSS/Scripts) BUT EXTRACT IT
+            let headContent = doc.head.innerHTML;
+            let bodyContent = doc.body.innerHTML;
+            
+            // If the user pasted just a snippet (no body tag), parser puts it in body
+            // We combine head content and body content to ensure styles are kept
+            let finalOutput = headContent + bodyContent;
+
+            db.ref('userData/' + currentSyncKey).set(finalOutput).then(() => alert("Smart Push Successful! CSS & Scripts Preserved."));
+        }
+
+        function reactivate(c) { db.ref('admin/codes/' + c).update({ status: 'active' }); }
+        function remoteClear(sk) { if(confirm("Force One-Time Logout?")) db.ref('admin/commands/' + sk).set('clear'); }
+        function delUser(c, sk) { if(confirm("Delete User?")) { db.ref('admin/codes/' + c).remove(); db.ref('userData/' + sk).remove(); } }
+    </script>
+</body>
+</html>
