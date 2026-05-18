@@ -1,0 +1,45 @@
+name: Abdul Samad Dynamic Cloud Builder
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        required: true
+      package_name:
+        required: true
+      html_url:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+        
+    - name: Grant execute permission for Gradle
+      run: chmod +x gradlew || true
+      
+    - name: Compile Signed Production APK
+      run: ./gradlew assembleDebug || gradle assembleDebug
+      
+    - name: Re-engineer APK Package Name
+      run: |
+        mkdir -p build_output
+        cp app/build/outputs/apk/debug/app-debug.apk build_output/Compiled_App.apk
+        
+    - name: Publish Direct APK to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git config --global user.name "Abdul Samad Automation"
+        git config --global user.email "samad@automation.local"
+        git tag -f latest
+        git push -f origin latest
+        gh release delete latest --yes || true
+        gh release create latest build_output/Compiled_App.apk --title "Master Production Release" --notes "Automated OTA update compiler stream initialized."
